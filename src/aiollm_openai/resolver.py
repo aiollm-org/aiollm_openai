@@ -6,10 +6,10 @@ from collections.abc import Mapping
 from http import HTTPStatus
 from typing import Any, Final, cast
 
-from ai_api.http.exceptions.resolver import BaseErrorResolver
-from ai_api.http.exceptions.status import APIStatusError, QuotaExceededError
-from ai_api.providers.openai.api import PROVIDER
-from ai_api.types.matchers import FieldValues
+from aiollm.http.exceptions.resolver import BaseErrorResolver
+from aiollm.http.exceptions.status import APIStatusError, QuotaExceededError
+from aiollm.providers.openai.api import PROVIDER
+from aiollm.types.matchers import FieldValues
 
 FAILED_RESPONSE: Final = FieldValues("status", "failed")
 """A ``Response`` whose generation failed.

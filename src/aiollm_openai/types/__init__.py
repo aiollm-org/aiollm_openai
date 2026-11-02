@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ai_api.providers.openai.types.events import (
+from aiollm.providers.openai.types.events import (
     BaseContentEvent,
     BaseResponseStreamEvent,
     ContentPartEvent,
@@ -15,7 +15,7 @@ from ai_api.providers.openai.types.events import (
     ResponseStreamEvent,
     UnknownEvent,
 )
-from ai_api.providers.openai.types.responses import (
+from aiollm.providers.openai.types.responses import (
     IncompleteDetails,
     InputTokensDetails,
     OutputContent,

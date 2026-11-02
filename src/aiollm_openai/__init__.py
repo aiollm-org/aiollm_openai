@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from ai_api.providers.openai.api import (
+from aiollm.providers.openai.api import (
     OPENAI_API,
     OpenAIAPI,
 )
-from ai_api.providers.openai.client import (
+from aiollm.providers.openai.client import (
     OpenAIClient,
 )
-from ai_api.providers.openai.resolver import (
+from aiollm.providers.openai.resolver import (
     OpenAIErrorResolver,
 )
 

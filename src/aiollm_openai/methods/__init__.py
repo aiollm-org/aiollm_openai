@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from ai_api.providers.openai.methods.base import (
+from aiollm.providers.openai.methods.base import (
     Metadata,
     ResponseParams,
 )
-from ai_api.providers.openai.methods.responses import (
+from aiollm.providers.openai.methods.responses import (
     CreateResponse,
     StreamResponse,
 )

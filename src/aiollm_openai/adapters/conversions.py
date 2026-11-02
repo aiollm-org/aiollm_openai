@@ -5,18 +5,18 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, Final
 
-from ai_api.adapters.base import BaseConversion
-from ai_api.adapters.stop import Stop
-from ai_api.enums import IncompleteReason
-from ai_api.http.exceptions.response import APIResponseError
-from ai_api.providers.openai.types.responses import (
+from aiollm.adapters.base import BaseConversion
+from aiollm.adapters.stop import Stop
+from aiollm.enums import IncompleteReason
+from aiollm.http.exceptions.response import APIResponseError
+from aiollm.providers.openai.types.responses import (
     OutputMessage,
     OutputRefusal,
     Response,
     ResponseUsage,
 )
-from ai_api.types.requests.generation import Turn
-from ai_api.types.responses.generation import TokenUsage
+from aiollm.types.requests.generation import Turn
+from aiollm.types.responses.generation import TokenUsage
 
 INCOMPLETE_REASONS: Final[Mapping[str, IncompleteReason]] = {
     "max_output_tokens": IncompleteReason.MAX_TOKENS,

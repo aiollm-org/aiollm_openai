@@ -4,22 +4,22 @@ from __future__ import annotations
 
 from typing import Final, Unpack
 
-from ai_api.client.base import BaseProviderClient
-from ai_api.http.auth import BearerAuth
-from ai_api.http.headers import AUTHORIZATION
-from ai_api.providers.openai.adapters.generation import (
+from aiollm.client.base import BaseProviderClient
+from aiollm.http.auth import BearerAuth
+from aiollm.http.headers import AUTHORIZATION
+from aiollm.providers.openai.adapters.generation import (
     OpenAIGenerationAdapter,
 )
-from ai_api.providers.openai.api import OPENAI_API, PROVIDER
-from ai_api.providers.openai.resolver import (
+from aiollm.providers.openai.api import OPENAI_API, PROVIDER
+from aiollm.providers.openai.resolver import (
     OpenAIErrorResolver,
 )
-from ai_api.providers.openai.types.events import ResponseStreamEvent
-from ai_api.providers.openai.types.responses import Response
-from ai_api.resources.generation import GenerationResource
-from ai_api.session.aiohttp import AiohttpSession, AiohttpSessionOptions
-from ai_api.session.factory import SessionFactory
-from ai_api.session.protocols import ISession
+from aiollm.providers.openai.types.events import ResponseStreamEvent
+from aiollm.providers.openai.types.responses import Response
+from aiollm.resources.generation import GenerationResource
+from aiollm.session.aiohttp import AiohttpSession, AiohttpSessionOptions
+from aiollm.session.factory import SessionFactory
+from aiollm.session.protocols import ISession
 
 session_factory: Final = SessionFactory(
     AiohttpSession,
