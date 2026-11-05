@@ -6,8 +6,8 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Discriminator, Field, Tag
 
-from ai_api.types.base import BaseAPITypeExtra
-from ai_api.types.unknown import UNKNOWN, BaseUnknown, by_type
+from aiollm.types.base import BaseAPITypeExtra
+from aiollm.types.unknown import UNKNOWN, BaseUnknown, by_type
 
 
 class OutputText(BaseAPITypeExtra):

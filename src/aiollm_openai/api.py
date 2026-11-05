@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Final
 
-from ai_api.enums import Provider
-from ai_api.http.api import BaseAPI
+from aiollm.enums import Provider
+from aiollm.http.api import BaseAPI
 
 PROVIDER: Final = Provider.OPENAI
 """The provider of this package; its client, resolver and adapter use it."""

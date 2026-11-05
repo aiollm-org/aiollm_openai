@@ -5,40 +5,40 @@ from __future__ import annotations
 from collections.abc import AsyncGenerator, AsyncIterator
 from typing import TYPE_CHECKING, Any
 
-from ai_api.adapters.base import BaseCompositeAdapter
-from ai_api.adapters.validation import check_last_turn, request_errors
-from ai_api.providers.openai.adapters.conversions import (
+from aiollm.adapters.base import BaseCompositeAdapter
+from aiollm.adapters.validation import check_last_turn, request_errors
+from aiollm.providers.openai.adapters.conversions import (
     INPUT_CONVERSION,
     STOP_CONVERSION,
     USAGE_CONVERSION,
     check_status,
 )
-from ai_api.providers.openai.api import PROVIDER
-from ai_api.providers.openai.methods.responses import (
+from aiollm.providers.openai.api import PROVIDER
+from aiollm.providers.openai.methods.responses import (
     CreateResponse,
     StreamResponse,
 )
-from ai_api.providers.openai.types.events import (
+from aiollm.providers.openai.types.events import (
     OutputTextDeltaEvent,
     ResponseStateEvent,
     ResponseStreamEvent,
 )
-from ai_api.providers.openai.types.responses import Response
-from ai_api.types.requests.generation import GenerationRequest
-from ai_api.types.responses.events import (
+from aiollm.providers.openai.types.responses import Response
+from aiollm.types.requests.generation import GenerationRequest
+from aiollm.types.responses.events import (
     CompletedEvent,
     GenerationEvent,
     OtherEvent,
     TextDeltaEvent,
 )
-from ai_api.types.responses.generation import GenerationResponse
+from aiollm.types.responses.generation import GenerationResponse
 
 if TYPE_CHECKING:
-    from ai_api.adapters.protocols import IConversion
-    from ai_api.adapters.stop import Stop
-    from ai_api.providers.openai.types.responses import ResponseUsage
-    from ai_api.types.requests.generation import Turn
-    from ai_api.types.responses.generation import TokenUsage
+    from aiollm.adapters.protocols import IConversion
+    from aiollm.adapters.stop import Stop
+    from aiollm.providers.openai.types.responses import ResponseUsage
+    from aiollm.types.requests.generation import Turn
+    from aiollm.types.responses.generation import TokenUsage
 
 
 class OpenAIGenerationAdapter(

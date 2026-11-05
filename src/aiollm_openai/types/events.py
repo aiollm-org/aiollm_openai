@@ -7,13 +7,13 @@ from typing import Annotated, ClassVar, Final, Literal
 
 from pydantic import Discriminator, Tag
 
-from ai_api.providers.openai.types.responses import (
+from aiollm.providers.openai.types.responses import (
     OutputContent,
     OutputItem,
     Response,
 )
-from ai_api.types.base import BaseAPITypeExtra
-from ai_api.types.unknown import UNKNOWN, BaseUnknown, by_type
+from aiollm.types.base import BaseAPITypeExtra
+from aiollm.types.unknown import UNKNOWN, BaseUnknown, by_type
 
 
 class BaseResponseStreamEvent(BaseAPITypeExtra):

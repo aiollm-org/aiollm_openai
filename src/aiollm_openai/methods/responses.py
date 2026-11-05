@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from typing import Final, Literal
 
-from ai_api.enums import BodyFormat, ResponseFormat
-from ai_api.methods.base import BaseAPIMethod, BaseStreamMethod
-from ai_api.providers.openai.methods.base import ResponseParams
-from ai_api.providers.openai.resolver import FAILED_RESPONSE
-from ai_api.providers.openai.types.events import ResponseStreamEvent
-from ai_api.providers.openai.types.responses import Response
-from ai_api.response.parse.buffered import BufferedResponseParser
-from ai_api.response.parse.stream import StreamResponseParser
-from ai_api.types.matchers import EventTypes, TopLevelError
+from aiollm.enums import BodyFormat, ResponseFormat
+from aiollm.methods.base import BaseAPIMethod, BaseStreamMethod
+from aiollm.providers.openai.methods.base import ResponseParams
+from aiollm.providers.openai.resolver import FAILED_RESPONSE
+from aiollm.providers.openai.types.events import ResponseStreamEvent
+from aiollm.providers.openai.types.responses import Response
+from aiollm.response.parse.buffered import BufferedResponseParser
+from aiollm.response.parse.stream import StreamResponseParser
+from aiollm.types.matchers import EventTypes, TopLevelError
 
 TERMINAL_EVENTS: Final = EventTypes(
     "response.completed", "response.incomplete", "response.failed"

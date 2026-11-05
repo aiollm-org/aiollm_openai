@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ai_api.providers.openai.adapters.generation import (
+from aiollm.providers.openai.adapters.generation import (
     OpenAIGenerationAdapter,
 )
 
