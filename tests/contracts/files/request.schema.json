@@ -1,0 +1,144 @@
+{
+ "$defs": {
+  "CreateFileParams": {
+   "type": "object",
+   "properties": {
+    "file": {
+     "description": "The File object (not file name) to be uploaded.\n",
+     "type": "string",
+     "format": "binary"
+    },
+    "purpose": {
+     "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n",
+     "type": "string",
+     "enum": [
+      "assistants",
+      "batch",
+      "fine-tune",
+      "vision",
+      "user_data",
+      "evals"
+     ]
+    },
+    "expires_after": {
+     "$ref": "#/$defs/FileExpirationAfter"
+    }
+   },
+   "required": [
+    "file",
+    "purpose"
+   ]
+  },
+  "CreateFileRequest": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "file": {
+     "description": "The File object (not file name) to be uploaded.\n",
+     "type": "string",
+     "format": "binary"
+    },
+    "purpose": {
+     "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n",
+     "type": "string",
+     "enum": [
+      "assistants",
+      "batch",
+      "fine-tune",
+      "vision",
+      "user_data",
+      "evals"
+     ]
+    },
+    "expires_after": {
+     "$ref": "#/$defs/FileExpirationAfter"
+    }
+   },
+   "required": [
+    "file",
+    "purpose"
+   ]
+  },
+  "DeleteFileParams": {
+   "type": "object",
+   "properties": {
+    "file_id": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "file_id"
+   ]
+  },
+  "DownloadFileParams": {
+   "type": "object",
+   "properties": {
+    "file_id": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "file_id"
+   ]
+  },
+  "FileExpirationAfter": {
+   "type": "object",
+   "title": "File expiration policy",
+   "description": "The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days and all other files are persisted until they are manually deleted.",
+   "properties": {
+    "anchor": {
+     "description": "Anchor timestamp after which the expiration policy applies. Supported anchors: `created_at`.",
+     "type": "string",
+     "enum": [
+      "created_at"
+     ]
+    },
+    "seconds": {
+     "description": "The number of seconds after the anchor time that the file will expire. Must be between 3600 (1 hour) and 2592000 (30 days).",
+     "type": "integer",
+     "format": "int64",
+     "minimum": 3600,
+     "maximum": 2592000
+    }
+   },
+   "required": [
+    "anchor",
+    "seconds"
+   ]
+  },
+  "ListFilesParams": {
+   "type": "object",
+   "properties": {
+    "purpose": {
+     "type": "string"
+    },
+    "limit": {
+     "type": "integer",
+     "default": 10000
+    },
+    "order": {
+     "type": "string",
+     "default": "desc",
+     "enum": [
+      "asc",
+      "desc"
+     ]
+    },
+    "after": {
+     "type": "string"
+    }
+   }
+  },
+  "RetrieveFileParams": {
+   "type": "object",
+   "properties": {
+    "file_id": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "file_id"
+   ]
+  }
+ }
+}
