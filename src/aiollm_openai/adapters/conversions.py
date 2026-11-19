@@ -26,6 +26,7 @@ from aiollm.types.requests.content import (
     ContentPart,
     DocumentPart,
     ImagePart,
+    ProviderFile,
 )
 from aiollm.types.requests.generation import (
     InputItem,
@@ -134,9 +135,10 @@ def _part(part: ContentPart) -> dict[str, Any]:
     """Convert a part of a turn into an item of a message's content.
 
     Text becomes ``input_text``; an image ``input_image`` with its
-    ``data:`` URL or URL and ``detail: "auto"``, OpenAI's default, which
-    the schema requires; a document ``input_file`` with ``file_data``
-    (a ``data:`` URL) and ``filename``, or ``file_url``.
+    ``data:`` URL, URL or ``file_id`` and ``detail: "auto"``, OpenAI's
+    default, which the schema requires; a document ``input_file`` with
+    ``file_data`` (a ``data:`` URL) and ``filename``, ``file_url`` or
+    ``file_id``. The adapter has checked that a file is OpenAI's.
 
     Args:
         part: The part.
@@ -149,6 +151,12 @@ def _part(part: ContentPart) -> dict[str, Any]:
             return {
                 "type": "input_image",
                 "image_url": _data_url(data, kind),
+                "detail": "auto",
+            }
+        case ImagePart(file=ProviderFile() as file):
+            return {
+                "type": "input_image",
+                "file_id": file.id,
                 "detail": "auto",
             }
         case ImagePart():
@@ -166,6 +174,8 @@ def _part(part: ContentPart) -> dict[str, Any]:
                 if filename is MISSING
                 else filename,
             }
+        case DocumentPart(file=ProviderFile() as file):
+            return {"type": "input_file", "file_id": file.id}
         case DocumentPart():
             return {"type": "input_file", "file_url": part.url}
         case _:

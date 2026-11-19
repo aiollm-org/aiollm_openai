@@ -11,6 +11,7 @@ from pydantic import MISSING
 from aiollm.adapters.base import BaseCompositeAdapter
 from aiollm.adapters.validation import (
     check_conversation,
+    check_files,
     checked_options,
     merge_options,
     request_errors,
@@ -356,9 +357,10 @@ class OpenAIGenerationAdapter(
 
         Raises:
             RequestValidationError: The conversation does not end with a
-                ``user`` turn.
+                ``user`` turn, or a part names another provider's file.
         """
         check_conversation(request, self.provider)
+        check_files(request, self.provider)
         fields = {
             "model": request.model,
             "input": self.input_conversion(request.input),

@@ -7,6 +7,7 @@ Every module but ``options`` is written by aiollm-codegen through
 from __future__ import annotations
 
 from aiollm.providers.openai.types.options import (
+    OpenAIFileOptions,
     OpenAIGenerationOptions,
     OpenAIReasoningOptions,
 )
@@ -537,6 +538,7 @@ __all__ = [
     "MoveParam",
     "NamespaceToolParam",
     "OpenAIFile",
+    "OpenAIFileOptions",
     "OpenAIGenerationOptions",
     "OpenAIReasoningOptions",
     "OutputContent",

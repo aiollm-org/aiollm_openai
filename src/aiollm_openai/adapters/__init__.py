@@ -7,11 +7,15 @@ from aiollm.providers.openai.adapters.conversions import (
     reasoning_summary,
     tool_calls,
 )
+from aiollm.providers.openai.adapters.files import (
+    OpenAIFilesAdapter,
+)
 from aiollm.providers.openai.adapters.generation import (
     OpenAIGenerationAdapter,
 )
 
 __all__ = [
+    "OpenAIFilesAdapter",
     "OpenAIGenerationAdapter",
     "output_text",
     "reasoning_summary",
