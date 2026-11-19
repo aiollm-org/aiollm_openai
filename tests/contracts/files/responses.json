@@ -1,0 +1,71 @@
+[
+ {
+  "id": "createFile",
+  "source": "openapi",
+  "body": {
+   "id": "file-abc123",
+   "object": "file",
+   "bytes": 120000,
+   "created_at": 1677610602,
+   "expires_at": 1680202602,
+   "filename": "mydata.jsonl",
+   "purpose": "fine-tune",
+   "status": "processed"
+  }
+ },
+ {
+  "id": "listFiles",
+  "source": "openapi",
+  "body": {
+   "object": "list",
+   "data": [
+    {
+     "id": "file-abc123",
+     "object": "file",
+     "bytes": 175,
+     "created_at": 1613677385,
+     "expires_at": 1677614202,
+     "filename": "salesOverview.pdf",
+     "purpose": "assistants",
+     "status": "processed"
+    },
+    {
+     "id": "file-abc456",
+     "object": "file",
+     "bytes": 140,
+     "created_at": 1613779121,
+     "expires_at": 1677614202,
+     "filename": "puppy.jsonl",
+     "purpose": "fine-tune",
+     "status": "processed"
+    }
+   ],
+   "first_id": "file-abc123",
+   "last_id": "file-abc456",
+   "has_more": false
+  }
+ },
+ {
+  "id": "retrieveFile",
+  "source": "openapi",
+  "body": {
+   "id": "file-abc123",
+   "object": "file",
+   "bytes": 120000,
+   "created_at": 1677610602,
+   "expires_at": 1680202602,
+   "filename": "mydata.jsonl",
+   "purpose": "fine-tune",
+   "status": "processed"
+  }
+ },
+ {
+  "id": "deleteFile",
+  "source": "openapi",
+  "body": {
+   "id": "file-abc123",
+   "object": "file",
+   "deleted": true
+  }
+ }
+]

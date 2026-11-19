@@ -226,6 +226,15 @@ class ContainerFileCitationBody(BaseAPITypeExtra):
     ]
 
 
+class DeleteFileResponse(BaseAPITypeExtra):
+    """`DeleteFileResponse` from the OpenAI API."""
+
+    __upstream_schema__ = "DeleteFileResponse"
+    id: str
+    object: Literal["file"]
+    deleted: bool
+
+
 class FileCitationBody(BaseAPITypeExtra):
     """A citation to a file.
 
@@ -285,6 +294,120 @@ class FilePath(BaseAPITypeExtra):
     ]
 
 
+class OpenAIFile(BaseAPITypeExtra):
+    """`OpenAIFile` from the OpenAI API (upstream: `OpenAIFile`).
+
+    The `File` object represents a document that has been uploaded to
+    OpenAI.
+
+    Attributes:
+        id: The file identifier, which can be referenced in the API
+            endpoints.
+        bytes: The size of the file, in bytes. In a completed file
+            upload response, this can be null when the file size is
+            not yet available.
+        created_at: The Unix timestamp (in seconds) for when the file
+            was created.
+        expires_at: The Unix timestamp (in seconds) for when the file
+            will expire. In a completed file upload response, this
+            can be null when no expiry is set.
+        filename: The name of the file.
+        object: The object type, which is always `file`.
+        purpose: The intended purpose of the file. Supported values
+            are `assistants`, `assistants_output`, `batch`,
+            `batch_output`, `fine-tune`, `fine-tune-results`,
+            `vision`, and `user_data`.
+        status: Deprecated. The current status of the file, which can
+            be either `uploaded`, `processed`, or `error`.
+        status_details: Deprecated. For details on why a fine-tuning
+            training file failed validation, see the `error` field on
+            `fine_tuning.job`. Completed file upload responses can
+            return null when these details are unset.
+    """
+
+    __upstream_schema__ = "OpenAIFile"
+    id: Annotated[
+        str,
+        Field(
+            description=(
+                "The file identifier, which can be referenced "
+                "in the API endpoints."
+            )
+        ),
+    ]
+    bytes: Annotated[
+        int | None,
+        Field(
+            description=(
+                "The size of the file, in bytes. In a completed"
+                " file upload response, this can\nbe null when "
+                "the file size is not yet available."
+            )
+        ),
+    ] = None
+    created_at: Annotated[
+        int,
+        Field(
+            description=(
+                "The Unix timestamp (in seconds) for when the "
+                "file was created."
+            )
+        ),
+    ]
+    expires_at: Annotated[
+        int | None,
+        Field(
+            description=(
+                "The Unix timestamp (in seconds) for when the "
+                "file will expire. In a\ncompleted file upload "
+                "response, this can be null when no expiry is "
+                "set."
+            )
+        ),
+    ] = None
+    filename: Annotated[str, Field(description="The name of the file.")]
+    object: Annotated[
+        Literal["file"],
+        Field(description="The object type, which is always `file`."),
+    ]
+    purpose: Annotated[
+        str,
+        Field(
+            description=(
+                "The intended purpose of the file. Supported "
+                "values are `assistants`, `assistants_output`, "
+                "`batch`, `batch_output`, `fine-tune`, "
+                "`fine-tune-results`, `vision`, and "
+                "`user_data`."
+            )
+        ),
+    ]
+    status: Annotated[
+        str,
+        Field(
+            deprecated=True,
+            description=(
+                "Deprecated. The current status of the file, "
+                "which can be either `uploaded`, `processed`, "
+                "or `error`."
+            ),
+        ),
+    ]
+    status_details: Annotated[
+        str | None,
+        Field(
+            deprecated=True,
+            description=(
+                "Deprecated. For details on why a fine-tuning "
+                "training file failed validation, see the "
+                "`error` field on `fine_tuning.job`. Completed "
+                "file upload responses can return null when "
+                "these details are unset."
+            ),
+        ),
+    ] = None
+
+
 type VectorStoreFileAttributesVectorStoreFileAttributes = Annotated[
     str, Field(max_length=512)
 ]
@@ -295,6 +418,24 @@ type VectorStoreFileAttributes = (
     ]
     | None
 )
+
+
+class ListFilesResponse(BaseAPITypeExtra):
+    """`ListFilesResponse` from the OpenAI API.
+
+    Attributes:
+        data: The `File` object represents a document that has been
+            uploaded to OpenAI.
+    """
+
+    __upstream_schema__ = "ListFilesResponse"
+    object: Annotated[str, Field(examples=["list"])]
+    data: list[OpenAIFile]
+    first_id: Annotated[str, Field(examples=["file-abc123"])]
+    last_id: Annotated[str, Field(examples=["file-abc456"])]
+    has_more: Annotated[bool, Field(examples=[False])]
+
+
 ApplyPatchCreateFileOperation.model_rebuild()
 ApplyPatchCreateFileOperationParam.model_rebuild()
 ApplyPatchDeleteFileOperation.model_rebuild()
@@ -302,8 +443,11 @@ ApplyPatchDeleteFileOperationParam.model_rebuild()
 ApplyPatchUpdateFileOperation.model_rebuild()
 ApplyPatchUpdateFileOperationParam.model_rebuild()
 ContainerFileCitationBody.model_rebuild()
+DeleteFileResponse.model_rebuild()
 FileCitationBody.model_rebuild()
 FilePath.model_rebuild()
+OpenAIFile.model_rebuild()
+ListFilesResponse.model_rebuild()
 __all__ = [
     "ApplyPatchCreateFileOperation",
     "ApplyPatchCreateFileOperationParam",
@@ -312,10 +456,13 @@ __all__ = [
     "ApplyPatchUpdateFileOperation",
     "ApplyPatchUpdateFileOperationParam",
     "ContainerFileCitationBody",
+    "DeleteFileResponse",
     "FileCitationBody",
     "FileDetailEnum",
     "FileInputDetail",
     "FilePath",
+    "ListFilesResponse",
+    "OpenAIFile",
     "VectorStoreFileAttributes",
     ("VectorStoreFileAttributesVectorStoreFileAttributes"),
 ]

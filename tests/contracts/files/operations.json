@@ -1,0 +1,70 @@
+{
+ "createFile": {
+  "method": "POST",
+  "path": "/files",
+  "path_parameters": [],
+  "query": [],
+  "body": [
+   "multipart/form-data"
+  ],
+  "response": [
+   "application/json"
+  ],
+  "schema": "OpenAIFile"
+ },
+ "listFiles": {
+  "method": "GET",
+  "path": "/files",
+  "path_parameters": [],
+  "query": [
+   "after",
+   "limit",
+   "order",
+   "purpose"
+  ],
+  "body": [],
+  "response": [
+   "application/json"
+  ],
+  "schema": "ListFilesResponse"
+ },
+ "retrieveFile": {
+  "method": "GET",
+  "path": "/files/{file_id}",
+  "path_parameters": [
+   "file_id"
+  ],
+  "query": [],
+  "body": [],
+  "response": [
+   "application/json"
+  ],
+  "schema": "OpenAIFile"
+ },
+ "deleteFile": {
+  "method": "DELETE",
+  "path": "/files/{file_id}",
+  "path_parameters": [
+   "file_id"
+  ],
+  "query": [],
+  "body": [],
+  "response": [
+   "application/json"
+  ],
+  "schema": "DeleteFileResponse"
+ },
+ "downloadFile": {
+  "method": "GET",
+  "path": "/files/{file_id}/content",
+  "path_parameters": [
+   "file_id"
+  ],
+  "query": [],
+  "body": [],
+  "response": [
+   "application/octet-stream"
+  ],
+  "schema": null
+ }
+}

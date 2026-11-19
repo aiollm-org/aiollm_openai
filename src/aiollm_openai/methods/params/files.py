@@ -5,9 +5,10 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import ConfigDict, Field, StringConstraints
+from pydantic import MISSING, ConfigDict, Field, StringConstraints
 
 from aiollm.types.base import BaseAPIType
+from aiollm.types.files import InputFile as _AiollmInputFile
 
 
 class ApplyPatchCreateFileOperationParam(BaseAPIType):
@@ -170,6 +171,22 @@ class ContainerFileCitationBody(BaseAPIType):
     ]
 
 
+class DeleteFileParams(BaseAPIType):
+    """`DeleteFileParams` from the OpenAI API."""
+
+    __upstream_schema__ = "DeleteFileParams"
+    model_config = ConfigDict(extra="forbid")
+    file_id: str
+
+
+class DownloadFileParams(BaseAPIType):
+    """`DownloadFileParams` from the OpenAI API."""
+
+    __upstream_schema__ = "DownloadFileParams"
+    model_config = ConfigDict(extra="forbid")
+    file_id: str
+
+
 class FileCitationBody(BaseAPIType):
     """A citation to a file.
 
@@ -207,6 +224,49 @@ class FileCitationBody(BaseAPIType):
 
 
 type FileDetailEnum = Literal["auto", "low", "high"]
+
+
+class FileExpirationAfter(BaseAPIType):
+    """The expiration policy for a file.
+
+    By default, files with `purpose=batch` expire after 30 days and
+    all
+    other files are persisted until they are manually deleted.
+
+    Attributes:
+        anchor: Anchor timestamp after which the expiration policy
+            applies. Supported anchors: `created_at`.
+        seconds: The number of seconds after the anchor time that the
+            file will expire. Must be between 3600 (1 hour) and
+            2592000 (30 days).
+    """
+
+    __upstream_schema__ = "FileExpirationAfter"
+    model_config = ConfigDict(extra="forbid")
+    anchor: Annotated[
+        Literal["created_at"],
+        Field(
+            description=(
+                "Anchor timestamp after which the expiration "
+                "policy applies. Supported anchors: "
+                "`created_at`."
+            )
+        ),
+    ] = "created_at"
+    seconds: Annotated[
+        int,
+        Field(
+            description=(
+                "The number of seconds after the anchor time "
+                "that the file will expire. Must be between "
+                "3600 (1 hour) and 2592000 (30 days)."
+            ),
+            ge=3600,
+            le=2592000,
+        ),
+    ]
+
+
 type FileInputDetail = Literal["auto", "low", "high"]
 
 
@@ -231,6 +291,25 @@ class FilePath(BaseAPIType):
     ]
 
 
+class ListFilesParams(BaseAPIType):
+    """`ListFilesParams` from the OpenAI API."""
+
+    __upstream_schema__ = "ListFilesParams"
+    model_config = ConfigDict(extra="forbid")
+    purpose: str | MISSING = MISSING
+    limit: int | MISSING = MISSING
+    order: Literal["asc", "desc"] | MISSING = MISSING
+    after: str | MISSING = MISSING
+
+
+class RetrieveFileParams(BaseAPIType):
+    """`RetrieveFileParams` from the OpenAI API."""
+
+    __upstream_schema__ = "RetrieveFileParams"
+    model_config = ConfigDict(extra="forbid")
+    file_id: str
+
+
 type VectorStoreFileAttributesVectorStoreFileAttributes = Annotated[
     str, Field(max_length=512)
 ]
@@ -241,21 +320,121 @@ type VectorStoreFileAttributes = (
     ]
     | None
 )
+
+
+class CreateFileParams(BaseAPIType):
+    """`CreateFileParams` from the OpenAI API.
+
+    Attributes:
+        file: The File object (not file name) to be uploaded.
+        purpose: The intended purpose of the uploaded file. One of: -
+            `assistants`: Used in the Assistants API - `batch`: Used
+            in the Batch API - `fine-tune`: Used for fine-tuning -
+            `vision`: Images used for vision fine-tuning -
+            `user_data`: Flexible file type for any purpose -
+            `evals`: Used for eval data sets
+        expires_after: The expiration policy for a file. By default,
+            files with `purpose=batch` expire after 30 days and all
+            other files are persisted until they are manually
+            deleted.
+    """
+
+    __upstream_schema__ = "CreateFileParams"
+    model_config = ConfigDict(extra="forbid")
+    file: Annotated[
+        _AiollmInputFile,
+        Field(description=("The File object (not file name) to be uploaded.")),
+    ]
+    purpose: Annotated[
+        Literal[
+            "assistants", "batch", "fine-tune", "vision", "user_data", "evals"
+        ],
+        Field(
+            description=(
+                "The intended purpose of the uploaded file. One"
+                " of:\n- `assistants`: Used in the Assistants "
+                "API\n- `batch`: Used in the Batch API\n- "
+                "`fine-tune`: Used for fine-tuning\n- `vision`:"
+                " Images used for vision fine-tuning\n- "
+                "`user_data`: Flexible file type for any "
+                "purpose\n- `evals`: Used for eval data sets"
+            )
+        ),
+    ]
+    expires_after: FileExpirationAfter | MISSING = MISSING
+
+
+class CreateFileRequest(BaseAPIType):
+    """`CreateFileRequest` from the OpenAI API.
+
+    Attributes:
+        file: The File object (not file name) to be uploaded.
+        purpose: The intended purpose of the uploaded file. One of: -
+            `assistants`: Used in the Assistants API - `batch`: Used
+            in the Batch API - `fine-tune`: Used for fine-tuning -
+            `vision`: Images used for vision fine-tuning -
+            `user_data`: Flexible file type for any purpose -
+            `evals`: Used for eval data sets
+        expires_after: The expiration policy for a file. By default,
+            files with `purpose=batch` expire after 30 days and all
+            other files are persisted until they are manually
+            deleted.
+    """
+
+    __upstream_schema__ = "CreateFileRequest"
+    model_config = ConfigDict(extra="forbid")
+    file: Annotated[
+        _AiollmInputFile,
+        Field(description=("The File object (not file name) to be uploaded.")),
+    ]
+    purpose: Annotated[
+        Literal[
+            "assistants", "batch", "fine-tune", "vision", "user_data", "evals"
+        ],
+        Field(
+            description=(
+                "The intended purpose of the uploaded file. One"
+                " of:\n- `assistants`: Used in the Assistants "
+                "API\n- `batch`: Used in the Batch API\n- "
+                "`fine-tune`: Used for fine-tuning\n- `vision`:"
+                " Images used for vision fine-tuning\n- "
+                "`user_data`: Flexible file type for any "
+                "purpose\n- `evals`: Used for eval data sets"
+            )
+        ),
+    ]
+    expires_after: FileExpirationAfter | MISSING = MISSING
+
+
 ApplyPatchCreateFileOperationParam.model_rebuild()
 ApplyPatchDeleteFileOperationParam.model_rebuild()
 ApplyPatchUpdateFileOperationParam.model_rebuild()
 ContainerFileCitationBody.model_rebuild()
+DeleteFileParams.model_rebuild()
+DownloadFileParams.model_rebuild()
 FileCitationBody.model_rebuild()
+FileExpirationAfter.model_rebuild()
 FilePath.model_rebuild()
+ListFilesParams.model_rebuild()
+RetrieveFileParams.model_rebuild()
+CreateFileParams.model_rebuild()
+CreateFileRequest.model_rebuild()
 __all__ = [
     "ApplyPatchCreateFileOperationParam",
     "ApplyPatchDeleteFileOperationParam",
     "ApplyPatchUpdateFileOperationParam",
     "ContainerFileCitationBody",
+    "CreateFileParams",
+    "CreateFileRequest",
+    "DeleteFileParams",
+    "DownloadFileParams",
     "FileCitationBody",
     "FileDetailEnum",
+    "FileExpirationAfter",
     "FileInputDetail",
     "FilePath",
+    "ListFilesParams",
+    "RetrieveFileParams",
     "VectorStoreFileAttributes",
     ("VectorStoreFileAttributesVectorStoreFileAttributes"),
 ]
