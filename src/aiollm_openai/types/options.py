@@ -65,3 +65,24 @@ class OpenAIGenerationOptions(TypedDict, total=False):
     top_p: CreateResponseParamsTopP | None
     include: list[IncludeEnum] | None
     max_tool_calls: int | None
+
+
+class OpenAIFileOptions(TypedDict, total=False):
+    """Fields of ``POST /files`` that the shared upload does not hold.
+
+    Given to ``client.files.upload()`` as ``provider_options``. Each key
+    is a field of ``CreateFile`` with its type.
+
+    Attributes:
+        purpose: What the file is for; ``user_data``, the purpose of
+            files given to a model as input, when left out.
+
+    Example:
+        >>> await client.files.upload(
+        ...     Path("cat.png"), provider_options={"purpose": "vision"}
+        ... )
+    """
+
+    purpose: Literal[
+        "assistants", "batch", "fine-tune", "vision", "user_data", "evals"
+    ]
