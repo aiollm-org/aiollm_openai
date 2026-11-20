@@ -171,6 +171,7 @@ convention = "google"
 
 [tool.ruff.lint.isort]
 known-first-party = ["aiollm_openai"]
+required-imports = ["from __future__ import annotations"]
 # The core gets a section of its own, after the third-party one, so the
 # generated modules keep the import layout aiollm-codegen writes.
 section-order = [
@@ -184,7 +185,6 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 aiollm = ["aiollm"]
-required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.format]
 quote-style = "double"
