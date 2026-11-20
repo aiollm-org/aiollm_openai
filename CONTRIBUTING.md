@@ -20,7 +20,7 @@ The core, [aiollm](https://github.com/aiollm-org/aiollm), comes from a commit pi
 
 ## A change in the core and here
 
-When a change needs the core too, the core's pull request comes first. Then this package's pull request pins the commit of that branch in `pyproject.toml` (both lines that name `aiollm`) and runs `uv lock`; once the core's pull request is merged, the pin moves to the commit of its merge. Locally, with both repositories side by side:
+When a change needs the core too, the core's pull request comes first. Then this package's pull request pins the commit of that branch in `pyproject.toml` (both lines that name `aiollm-core`) and runs `uv lock`; once the core's pull request is merged, the pin moves to the commit of its merge. Locally, with both repositories side by side:
 
 ```bash
 uv sync --all-groups
