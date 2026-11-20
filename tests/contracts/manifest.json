@@ -1,0 +1,41 @@
+{
+ "endpoints": {
+  "responses": {
+   "openapi": {
+    "file": "openapi.yaml",
+    "sha256": "e5666b742f332bc67a43f76f2988f21e81cdc48636c3d25f79f15c7d16ab37b8",
+    "openapi": "3.1.0",
+    "version": "2.3.0"
+   },
+   "request": {
+    "component": "CreateResponse"
+   },
+   "response": {
+    "component": "Response"
+   },
+   "stream": {
+    "component": "ResponseStreamEvent"
+   },
+   "responses": 9,
+   "events": 9,
+   "rejected": []
+  },
+  "files": {
+   "operations": [
+    "createFile",
+    "listFiles",
+    "retrieveFile",
+    "deleteFile",
+    "downloadFile"
+   ],
+   "openapi": {
+    "file": "openapi.yaml",
+    "sha256": "e5666b742f332bc67a43f76f2988f21e81cdc48636c3d25f79f15c7d16ab37b8",
+    "openapi": "3.1.0",
+    "version": "2.3.0"
+   },
+   "responses": 4,
+   "rejected": []
+  }
+ }
+}
