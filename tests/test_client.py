@@ -17,8 +17,9 @@ from aiollm.http.exceptions.status import (
     RateLimitError,
     ServiceUnavailableError,
 )
-from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
-from aiollm.providers.openai.resolver import (
+
+from aiollm_openai.api import PROVIDER as OPENAI_PROVIDER
+from aiollm_openai.resolver import (
     OpenAIErrorResolver,
 )
 

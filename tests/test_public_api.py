@@ -15,12 +15,10 @@ PACKAGES = list(json.loads(SNAPSHOT.read_text(encoding="utf-8")))
 
 
 def test_every_package_is_listed() -> None:
-    root = importlib.import_module("aiollm.providers.openai")
+    root = importlib.import_module("aiollm_openai")
     folder = Path(root.__file__ or "").parent
     found = {
-        ".".join(
-            ["aiollm.providers.openai", *init.parent.relative_to(folder).parts]
-        )
+        ".".join(["aiollm_openai", *init.parent.relative_to(folder).parts])
         for init in folder.rglob("__init__.py")
     }
 

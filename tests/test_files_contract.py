@@ -10,13 +10,14 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from aiollm.providers.openai import OpenAIClient
-from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
-from aiollm.providers.openai.client import session_factory as openai_factory
-from aiollm.providers.openai.types import OpenAIFile
 from aiollm.testing.contract.files import FilesCase, FilesContract
-from tests.providers.openai import test_responses as openai
-from tests.providers.openai.test_files import documented
+
+from aiollm_openai import OpenAIClient
+from aiollm_openai.api import PROVIDER as OPENAI_PROVIDER
+from aiollm_openai.client import session_factory as openai_factory
+from aiollm_openai.types import OpenAIFile
+from tests import test_responses as openai
+from tests.test_files import documented
 
 OPENAI_FILE = documented("createFile")
 

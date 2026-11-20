@@ -20,14 +20,19 @@ from aiollm.http.exceptions.status import (
     RateLimitError,
 )
 from aiollm.http.exceptions.transport import APIStreamInterruptedError
-from aiollm.providers.openai.adapters.conversions import (
+from aiollm.response.buffered import BufferedResponse
+from aiollm.session.aiohttp import AiohttpSession
+from aiollm.testing import FakeStreamResponse, FakeTransport, Reply
+from aiollm.testing.aiohttp import Recorder
+
+from aiollm_openai.adapters.conversions import (
     output_text,
     reasoning_summary,
 )
-from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
-from aiollm.providers.openai.methods import CreateResponse, StreamResponse
-from aiollm.providers.openai.resolver import OpenAIErrorResolver
-from aiollm.providers.openai.types import (
+from aiollm_openai.api import PROVIDER as OPENAI_PROVIDER
+from aiollm_openai.methods import CreateResponse, StreamResponse
+from aiollm_openai.resolver import OpenAIErrorResolver
+from aiollm_openai.types import (
     OutputMessage,
     OutputTextContent,
     ReasoningItem,
@@ -45,11 +50,7 @@ from aiollm.providers.openai.types import (
     ResponseTextDeltaEvent,
     ResponseTextDoneEvent,
 )
-from aiollm.providers.openai.types.shared import UnknownVariant
-from aiollm.response.buffered import BufferedResponse
-from aiollm.session.aiohttp import AiohttpSession
-from aiollm.testing import FakeStreamResponse, FakeTransport, Reply
-from aiollm.testing.aiohttp import Recorder
+from aiollm_openai.types.shared import UnknownVariant
 
 MESSAGE: dict[str, Any] = {
     "type": "message",

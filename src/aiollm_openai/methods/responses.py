@@ -9,16 +9,17 @@ from pydantic import MISSING, StringConstraints
 
 from aiollm.enums import BodyFormat, ResponseFormat
 from aiollm.methods.base import BaseAPIMethod, BaseStreamMethod
-from aiollm.providers.openai.methods.params.responses import (
-    CreateResponseParams,
-    StreamResponseParams,
-)
-from aiollm.providers.openai.resolver import FAILED_RESPONSE
-from aiollm.providers.openai.types.events import ResponseStreamEvent
-from aiollm.providers.openai.types.responses import Response
 from aiollm.response.parse.buffered import BufferedResponseParser
 from aiollm.response.parse.stream import StreamResponseParser
 from aiollm.types.matchers import EventTypes, TopLevelError
+
+from aiollm_openai.methods.params.responses import (
+    CreateResponseParams,
+    StreamResponseParams,
+)
+from aiollm_openai.resolver import FAILED_RESPONSE
+from aiollm_openai.types.events import ResponseStreamEvent
+from aiollm_openai.types.responses import Response
 
 type Metadata = Annotated[
     dict[

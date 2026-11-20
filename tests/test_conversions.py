@@ -12,18 +12,19 @@ from typing import Any
 
 from aiollm.adapters import BaseConversion, IConversion, Stop
 from aiollm.enums import IncompleteReason
-from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
-from aiollm.providers.openai.adapters.conversions import (
+from aiollm.types.requests import InputItem
+from aiollm.types.responses import CompletedEvent, TokenUsage
+
+from aiollm_openai.adapters import OpenAIGenerationAdapter
+from aiollm_openai.adapters.conversions import (
     INPUT_CONVERSION as INPUT,
 )
-from aiollm.providers.openai.adapters.conversions import (
+from aiollm_openai.adapters.conversions import (
     STOP_CONVERSION,
     USAGE_CONVERSION,
 )
-from aiollm.providers.openai.types import Response, ResponseUsage
-from aiollm.types.requests import InputItem
-from aiollm.types.responses import CompletedEvent, TokenUsage
-from tests.providers.openai import test_generation as openai
+from aiollm_openai.types import Response, ResponseUsage
+from tests import test_generation as openai
 
 USAGE = TokenUsage(input_tokens=1, output_tokens=2, total_tokens=3)
 

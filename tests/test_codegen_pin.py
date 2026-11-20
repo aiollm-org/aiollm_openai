@@ -7,7 +7,7 @@ import runpy
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[1]
 HERE = Path(__file__).parent
 
 
@@ -15,7 +15,7 @@ def test_the_pinned_openapi_file_is_the_snapshot_one() -> None:
     # The types and the wire contracts come from one OpenAI file, so a
     # new file changes the pin and the snapshot together.
     script: dict[str, Any] = runpy.run_path(
-        str(ROOT / "scripts" / "openai" / "generate_types.py")
+        str(ROOT / "scripts" / "generate_types.py")
     )
     manifest = json.loads(
         (HERE / "contracts" / "manifest.json").read_text("utf-8")

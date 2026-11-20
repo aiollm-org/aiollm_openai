@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from aiollm.enums import BodyFormat, ResponseFormat
 from aiollm.methods.base import BaseAPIMethod, BaseStreamMethod
-from aiollm.providers.openai.methods.params.files import (
+
+from aiollm_openai.methods.params.files import (
     CreateFileParams,
     DeleteFileParams,
     DownloadFileParams,
     ListFilesParams,
     RetrieveFileParams,
 )
-from aiollm.providers.openai.types.files import (
+from aiollm_openai.types.files import (
     DeleteFileResponse,
     ListFilesResponse,
     OpenAIFile,

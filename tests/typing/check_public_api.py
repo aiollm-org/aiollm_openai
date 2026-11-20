@@ -24,17 +24,6 @@ from aiollm.adapters import IConversion
 from aiollm.adapters import Stop as GenerationStop
 from aiollm.client import BaseClient
 from aiollm.http import BearerAuth
-from aiollm.providers.openai import OpenAIClient
-from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
-from aiollm.providers.openai.client import session_factory
-from aiollm.providers.openai.methods import CreateResponse, StreamResponse
-from aiollm.providers.openai.types import (
-    OpenAIFile,
-    Response,
-    ResponseStreamEvent,
-    ResponseUsage,
-)
-from aiollm.providers.openai.types.options import OpenAIGenerationOptions
 from aiollm.resources import (
     GenerationResource,
     IFilesClient,
@@ -45,6 +34,18 @@ from aiollm.session import ISession, ISessionFactory
 from aiollm.session.aiohttp import AiohttpSession
 from aiollm.types.requests import GenerationRequest, ToolCallTurn, Turn
 from aiollm.types.responses import GenerationResponse, StoredFile, TokenUsage
+
+from aiollm_openai import OpenAIClient
+from aiollm_openai.adapters import OpenAIGenerationAdapter
+from aiollm_openai.client import session_factory
+from aiollm_openai.methods import CreateResponse, StreamResponse
+from aiollm_openai.types import (
+    OpenAIFile,
+    Response,
+    ResponseStreamEvent,
+    ResponseUsage,
+)
+from aiollm_openai.types.options import OpenAIGenerationOptions
 
 
 async def responses_infer_their_types(session: AiohttpSession) -> None:

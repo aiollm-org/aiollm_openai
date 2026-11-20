@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Literal, TypedDict
 
-from aiollm.providers.openai.methods.params.responses import (
+from aiollm_openai.methods.params.responses import (
     CreateResponseParamsTemperature,
     CreateResponseParamsTopP,
     IncludeEnum,
     ReasoningModeEnum,
 )
-from aiollm.providers.openai.methods.responses import Metadata
+from aiollm_openai.methods.responses import Metadata
 
 
 class OpenAIReasoningOptions(TypedDict, total=False):

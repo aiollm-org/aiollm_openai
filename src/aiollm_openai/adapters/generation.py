@@ -18,34 +18,6 @@ from aiollm.adapters.validation import (
 )
 from aiollm.enums import ToolChoice
 from aiollm.http.exceptions.response import APIResponseError
-from aiollm.providers.openai.adapters.conversions import (
-    INPUT_CONVERSION,
-    STOP_CONVERSION,
-    USAGE_CONVERSION,
-    check_status,
-    native_output,
-    output_text,
-    reasoning_summary,
-    tool_calls,
-)
-from aiollm.providers.openai.api import PROVIDER
-from aiollm.providers.openai.methods.responses import (
-    CreateResponse,
-    StreamResponse,
-)
-from aiollm.providers.openai.types import (
-    FunctionToolCall,
-    Response,
-    ResponseCompletedEvent,
-    ResponseFunctionCallArgumentsDeltaEvent,
-    ResponseIncompleteEvent,
-    ResponseOutputItemAddedEvent,
-    ResponseOutputItemDoneEvent,
-    ResponseReasoningSummaryTextDeltaEvent,
-    ResponseStreamEvent,
-    ResponseTextDeltaEvent,
-)
-from aiollm.providers.openai.types.options import OpenAIGenerationOptions
 from aiollm.types.requests.generation import (
     ForcedTool,
     GenerationRequest,
@@ -65,11 +37,41 @@ from aiollm.types.responses.events import (
 )
 from aiollm.types.responses.generation import GenerationResponse
 
+from aiollm_openai.adapters.conversions import (
+    INPUT_CONVERSION,
+    STOP_CONVERSION,
+    USAGE_CONVERSION,
+    check_status,
+    native_output,
+    output_text,
+    reasoning_summary,
+    tool_calls,
+)
+from aiollm_openai.api import PROVIDER
+from aiollm_openai.methods.responses import (
+    CreateResponse,
+    StreamResponse,
+)
+from aiollm_openai.types import (
+    FunctionToolCall,
+    Response,
+    ResponseCompletedEvent,
+    ResponseFunctionCallArgumentsDeltaEvent,
+    ResponseIncompleteEvent,
+    ResponseOutputItemAddedEvent,
+    ResponseOutputItemDoneEvent,
+    ResponseReasoningSummaryTextDeltaEvent,
+    ResponseStreamEvent,
+    ResponseTextDeltaEvent,
+)
+from aiollm_openai.types.options import OpenAIGenerationOptions
+
 if TYPE_CHECKING:
     from aiollm.adapters.protocols import IConversion
     from aiollm.adapters.stop import Stop
-    from aiollm.providers.openai.types import ResponseUsage
     from aiollm.types.responses.generation import TokenUsage
+
+    from aiollm_openai.types import ResponseUsage
 
 
 SHARED_FIELDS: Final[Mapping[str, str]] = {

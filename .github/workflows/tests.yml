@@ -1,0 +1,142 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    # labeled/unlabeled too, so a "no changelog" label added after the
+    # pull request opened reaches the changelog check.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: lint and types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+      - run: uv sync --all-groups --locked
+      - run: uv run ruff check src tests
+      - run: uv run ruff format --check src tests
+      - run: uv run mypy src
+      - run: uv run pyright
+      - run: uv run pytest --mypy -m mypy tests/typing
+      - run: >-
+          uv run rumdl check README.md CHANGELOG.md CONTRIBUTING.md
+          CLAUDE.md .claude
+      # The types are what the pinned generator makes of the pinned
+      # OpenAPI file: regenerating them changes nothing.
+      - run: uv run python scripts/generate_types.py
+      - run: git add --intent-to-add . && git diff --exit-code
+
+  test-matrix:
+    name: tests (${{ matrix.os }}, ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        # Every CPython the package supports (requires-python >= 3.13);
+        # 3.13, the oldest, is also what .python-version pins locally.
+        python: ["3.13", "3.14", "3.15"]
+    env:
+      # For every uv command of the job: with only `uv sync --python`,
+      # `uv run` would take .python-version's 3.13 and rebuild the
+      # environment without the test group.
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+      # The generator only runs in the job above.
+      - run: uv sync --all-groups --no-group codegen --locked
+      - run: >-
+          uv run pytest --cov --cov-branch --cov-report=xml
+          --html=report.html --self-contained-html
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-report-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            coverage.xml
+            report.html
+
+  tests:
+    # One stable name for the branch ruleset, whatever the matrix holds.
+    name: tests
+    if: always()
+    needs: [test-matrix]
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.test-matrix.result }}" = "success"
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv build
+      # The wheel brings the core it pins: nothing else is installed.
+      - name: Install the wheel into a clean environment and import it
+        run: |
+          uv venv --python 3.13 .wheel-env
+          uv pip install --python .wheel-env dist/*.whl
+          .wheel-env/bin/python - <<'EOF'
+          import sys
+          from importlib.metadata import version
+
+          import aiollm_openai
+          from aiollm.testing.extension import check_extension_api
+
+          assert aiollm_openai.__version__ == version("aiollm-openai"), (
+              aiollm_openai.__version__,
+              version("aiollm-openai"),
+          )
+          assert check_extension_api("aiollm_openai") == []
+          assert "pytest" not in sys.modules
+          print(
+              "aiollm-openai",
+              aiollm_openai.__version__,
+              "imports from its wheel",
+          )
+          EOF
+
+  changelog:
+    # A pull request adds a fragment to CHANGES/ (or, for a release,
+    # changes CHANGELOG.md itself); the "no changelog" label skips the
+    # check for a change no user sees.
+    name: changelog
+    if: >-
+      github.event_name == 'pull_request'
+      && !contains(github.event.pull_request.labels.*.name, 'no changelog')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: >-
+          uv run --locked --only-group dev
+          towncrier check --compare-with origin/${{ github.base_ref }}
+
+  audit:
+    name: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      # Known vulnerabilities in every locked dependency, dev tools too.
+      # An exception is an --ignore <ID> with its reason in a comment
+      # (rule, reason, scope, owner, review condition: manifest §18).
+      - run: uv audit --locked --preview-features audit-command

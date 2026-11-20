@@ -8,26 +8,27 @@ from aiollm.client.base import BaseProviderClient
 from aiollm.client.binding import bind_resource
 from aiollm.http.auth import BearerAuth
 from aiollm.http.headers import AUTHORIZATION
-from aiollm.providers.openai.adapters.files import OpenAIFilesAdapter
-from aiollm.providers.openai.adapters.generation import (
-    OpenAIGenerationAdapter,
-)
-from aiollm.providers.openai.api import OPENAI_API, PROVIDER
-from aiollm.providers.openai.resolver import (
-    OpenAIErrorResolver,
-)
-from aiollm.providers.openai.types.events import ResponseStreamEvent
-from aiollm.providers.openai.types.files import ListFilesResponse, OpenAIFile
-from aiollm.providers.openai.types.options import (
-    OpenAIFileOptions,
-    OpenAIGenerationOptions,
-)
-from aiollm.providers.openai.types.responses import Response
 from aiollm.resources.files import FilesResource
 from aiollm.resources.generation import GenerationResource
 from aiollm.session.aiohttp import AiohttpSession, AiohttpSessionOptions
 from aiollm.session.factory import SessionFactory
 from aiollm.session.protocols import ISession
+
+from aiollm_openai.adapters.files import OpenAIFilesAdapter
+from aiollm_openai.adapters.generation import (
+    OpenAIGenerationAdapter,
+)
+from aiollm_openai.api import OPENAI_API, PROVIDER
+from aiollm_openai.resolver import (
+    OpenAIErrorResolver,
+)
+from aiollm_openai.types.events import ResponseStreamEvent
+from aiollm_openai.types.files import ListFilesResponse, OpenAIFile
+from aiollm_openai.types.options import (
+    OpenAIFileOptions,
+    OpenAIGenerationOptions,
+)
+from aiollm_openai.types.responses import Response
 
 session_factory: Final = SessionFactory(
     AiohttpSession,

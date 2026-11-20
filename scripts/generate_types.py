@@ -1,8 +1,8 @@
 """Regenerate OpenAI's types and request parameters with aiollm-codegen.
 
-Run from the aiollm checkout:
+Run from the aiollm_openai checkout:
 
-    uv run python scripts/openai/generate_types.py [--codegen DIR]
+    uv run python scripts/generate_types.py [--codegen DIR]
 
 Both inputs are pinned, so the same commit always gives the same files
 (the CI job ``lint and types`` regenerates them and fails on any
@@ -12,7 +12,7 @@ of aiollm-codegen named in ``pyproject.toml`` and ``uv.lock``;
 generator. The types come from OpenAI's official OpenAPI file at the
 commit of ``OPENAI_OPENAPI_URL``, downloaded and checked against
 ``OPENAI_OPENAPI_SHA256`` (the file of the contract snapshot,
-``tests/providers/openai/contracts/manifest.json``, a test checks), or
+``tests/contracts/manifest.json``, a test checks), or
 from the file ``OPENAI_OPENAPI`` names, which must be the same;
 restricted to ``OPENAI_OPERATIONS``. To follow a new file, refresh the
 contract snapshot from it and change the URL and the hash here together.
@@ -37,9 +37,9 @@ import urllib.request
 from pathlib import Path
 from typing import Final
 
-ROOT: Final = Path(__file__).resolve().parents[2]
-PACKAGE: Final = ROOT / "src" / "aiollm" / "providers" / "openai"
-MODULE: Final = "aiollm.providers.openai"
+ROOT: Final = Path(__file__).resolve().parents[1]
+PACKAGE: Final = ROOT / "src" / "aiollm_openai"
+MODULE: Final = "aiollm_openai"
 
 OPENAI_OPENAPI_URL: Final = (
     "https://raw.githubusercontent.com/openai/openai-openapi/"
@@ -152,7 +152,7 @@ def install(generated: Path) -> None:
         '"""OpenAI\'s own types and the options of a generation call.',
         "",
         "Every module but ``options`` is written by aiollm-codegen through",
-        "``scripts/openai/generate_types.py``; do not edit them by hand.",
+        "``scripts/generate_types.py``; do not edit them by hand.",
         '"""',
         "",
         "from __future__ import annotations",
