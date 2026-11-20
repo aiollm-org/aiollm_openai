@@ -16,11 +16,11 @@ uv sync --all-groups
 uv run pre-commit install
 ```
 
-The core, [aiollm](https://github.com/aiollm-org/aiollm), comes from a commit pinned in `pyproject.toml`, with its test kit (`aiollm[testing]`).
+The core, [aiollm](https://github.com/aiollm-org/aiollm), comes from PyPI as `aiollm-core`, one minor version of it (`>=0.15,<0.16`), with its test kit (`aiollm-core[testing]`).
 
 ## A change in the core and here
 
-When a change needs the core too, the core's pull request comes first. Then this package's pull request pins the commit of that branch in `pyproject.toml` (both lines that name `aiollm-core`) and runs `uv lock`; once the core's pull request is merged, the pin moves to the commit of its merge. Locally, with both repositories side by side:
+When a change needs the core too, the core's pull request comes first. Then this package's pull request pins the commit of that branch in `pyproject.toml` (both lines that name `aiollm-core`) and runs `uv lock`; once the core's pull request is merged, the pin moves to the commit of its merge, and the core's next release puts the range back (a release of this package never pins a commit: PyPI refuses it). Locally, with both repositories side by side:
 
 ```bash
 uv sync --all-groups
@@ -61,7 +61,7 @@ Open a pull request against `master`. It is merged when these pass:
 |---|---|
 | `lint and types` | ruff, mypy, pyright, the typing tests, the Markdown lint and a regeneration of the types |
 | `tests` | pytest with coverage on Linux and Windows, CPython 3.13, 3.14 and 3.15 |
-| `package` | the wheel in a clean environment, with the core it pins |
+| `package` | the wheel in a clean environment, with the core from PyPI |
 | `audit` | known vulnerabilities in the locked dependencies (`uv audit`) |
 | `changelog` | a changelog fragment, unless the PR has the `no changelog` label |
 
