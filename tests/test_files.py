@@ -14,13 +14,14 @@ from typing import Any
 import pytest
 
 from aiollm.http.exceptions.status import ServiceUnavailableError
-from aiollm.providers.openai import OpenAIClient
-from aiollm.providers.openai import methods as openai
-from aiollm.providers.openai.client import session_factory
-from aiollm.providers.openai.methods.params import FileExpirationAfter
 from aiollm.testing import TEST_TOKEN, LocalAPI, Reply
 from aiollm.testing.aiohttp import Recorder
 from aiollm.types.files import BytesFile
+
+from aiollm_openai import OpenAIClient
+from aiollm_openai import methods as openai
+from aiollm_openai.client import session_factory
+from aiollm_openai.methods.params import FileExpirationAfter
 
 CONTRACTS = Path(__file__).parent / "contracts"
 

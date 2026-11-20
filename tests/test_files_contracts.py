@@ -22,8 +22,9 @@ from jsonschema import Draft202012Validator
 from aiollm.enums import BodyFormat, ResponseFormat
 from aiollm.methods import BaseAPIMethod, BaseStreamMethod
 from aiollm.methods.base import BaseMethod
-from aiollm.providers.openai import methods
 from aiollm.types.base import BaseAPIType
+
+from aiollm_openai import methods
 
 CONTRACTS: Final = Path(__file__).parent / "contracts"
 

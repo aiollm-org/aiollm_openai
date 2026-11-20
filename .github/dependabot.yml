@@ -1,0 +1,8 @@
+# A new aiollm-core (once it is on PyPI) or another dependency opens a
+# pull request against the lockfile.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly

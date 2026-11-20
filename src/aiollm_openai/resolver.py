@@ -8,8 +8,9 @@ from typing import Any, Final, cast
 
 from aiollm.http.exceptions.resolver import BaseErrorResolver
 from aiollm.http.exceptions.status import APIStatusError, QuotaExceededError
-from aiollm.providers.openai.api import PROVIDER
 from aiollm.types.matchers import FieldValues
+
+from aiollm_openai.api import PROVIDER
 
 FAILED_RESPONSE: Final = FieldValues("status", "failed")
 """A ``Response`` whose generation failed.

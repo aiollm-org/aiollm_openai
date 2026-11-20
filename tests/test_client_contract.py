@@ -7,10 +7,11 @@ The scenarios of ``aiollm.testing.contract.clients`` run against
 
 from __future__ import annotations
 
-from aiollm.providers.openai.api import OPENAI_API, PROVIDER
-from aiollm.providers.openai.client import OpenAIClient
-from aiollm.providers.openai.resolver import OpenAIErrorResolver
 from aiollm.testing.contract.clients import ClientCase, ClientContract
+
+from aiollm_openai.api import OPENAI_API, PROVIDER
+from aiollm_openai.client import OpenAIClient
+from aiollm_openai.resolver import OpenAIErrorResolver
 
 OPENAI = ClientCase(
     client=OpenAIClient,

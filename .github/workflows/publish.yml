@@ -1,0 +1,43 @@
+name: publish
+
+# A tag v<version> publishes that version to PyPI through trusted
+# publishing (no token): the pypi environment of this repository and the
+# pending publisher on pypi.org name this workflow. Tags are set by the
+# maintainer only.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - name: The tag is the package's version
+        run: |
+          version=$(uv run --no-project python -c "import runpy; print(runpy.run_path('src/aiollm_openai/__meta__.py')['__version__'])")
+          test "v$version" = "$GITHUB_REF_NAME"
+      - run: uv build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: publish
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from aiollm.providers.openai.api import (
+from aiollm_openai.__meta__ import __version__
+from aiollm_openai.api import (
     OPENAI_API,
     OpenAIAPI,
 )
-from aiollm.providers.openai.client import (
+from aiollm_openai.client import (
     OpenAIClient,
 )
-from aiollm.providers.openai.resolver import (
+from aiollm_openai.resolver import (
     OpenAIErrorResolver,
 )
 
@@ -18,4 +19,5 @@ __all__ = [
     "OpenAIAPI",
     "OpenAIClient",
     "OpenAIErrorResolver",
+    "__version__",
 ]

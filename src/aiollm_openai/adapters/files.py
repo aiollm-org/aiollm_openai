@@ -15,19 +15,20 @@ from aiollm.adapters.validation import (
     merge_options,
     request_errors,
 )
-from aiollm.providers.openai.api import PROVIDER
-from aiollm.providers.openai.methods.files import (
+from aiollm.types.requests.content import ProviderFile
+from aiollm.types.requests.upload import FileUpload
+from aiollm.types.responses.files import StoredFile
+
+from aiollm_openai.api import PROVIDER
+from aiollm_openai.methods.files import (
     CreateFile,
     DeleteFile,
     DownloadFile,
     ListFiles,
     RetrieveFile,
 )
-from aiollm.providers.openai.types.files import ListFilesResponse, OpenAIFile
-from aiollm.providers.openai.types.options import OpenAIFileOptions
-from aiollm.types.requests.content import ProviderFile
-from aiollm.types.requests.upload import FileUpload
-from aiollm.types.responses.files import StoredFile
+from aiollm_openai.types.files import ListFilesResponse, OpenAIFile
+from aiollm_openai.types.options import OpenAIFileOptions
 
 DEFAULT_PURPOSE: Final = "user_data"
 """``purpose`` of an upload that does not set it: a model's input."""

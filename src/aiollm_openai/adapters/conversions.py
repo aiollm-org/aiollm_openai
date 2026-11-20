@@ -12,16 +12,6 @@ from aiollm.adapters.base import BaseConversion
 from aiollm.adapters.stop import Stop
 from aiollm.enums import IncompleteReason, Role
 from aiollm.http.exceptions.response import APIResponseError
-from aiollm.providers.openai.api import PROVIDER
-from aiollm.providers.openai.types import (
-    FunctionToolCall,
-    OutputMessage,
-    OutputTextContent,
-    ReasoningItem,
-    RefusalContent,
-    Response,
-    ResponseUsage,
-)
 from aiollm.types.requests.content import (
     ContentPart,
     DocumentPart,
@@ -31,10 +21,22 @@ from aiollm.types.requests.content import (
 from aiollm.types.requests.generation import (
     InputItem,
     NativeOutput,
+    ToolCall,
     ToolCallTurn,
     Turn,
 )
-from aiollm.types.responses.generation import TokenUsage, ToolCall
+from aiollm.types.responses.generation import TokenUsage
+
+from aiollm_openai.api import PROVIDER
+from aiollm_openai.types import (
+    FunctionToolCall,
+    OutputMessage,
+    OutputTextContent,
+    ReasoningItem,
+    RefusalContent,
+    Response,
+    ResponseUsage,
+)
 
 INCOMPLETE_REASONS: Final[Mapping[str, IncompleteReason]] = {
     "max_output_tokens": IncompleteReason.MAX_TOKENS,

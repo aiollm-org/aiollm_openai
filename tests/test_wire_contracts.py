@@ -37,11 +37,6 @@ from pydantic_core import to_jsonable_python
 from aiollm.adapters import ICompositeAdapter
 from aiollm.enums import Effort, ToolChoice
 from aiollm.methods import BaseAPIMethod, BaseStreamMethod
-from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
-from aiollm.providers.openai.adapters.conversions import output_text
-from aiollm.providers.openai.methods import CreateResponse, StreamResponse
-from aiollm.providers.openai.types import Response, ResponseStreamEvent
-from aiollm.providers.openai.types.options import OpenAIGenerationOptions
 from aiollm.response.parse.stream import StreamResponseParser
 from aiollm.session.aiohttp import AiohttpSession
 from aiollm.testing import Reply
@@ -66,8 +61,14 @@ from aiollm.types.requests import (
     ToolResult,
     Turn,
 )
-from tests.providers.openai import test_responses as openai
-from tests.providers.openai.contracts.update import event_tags, type_tags
+
+from aiollm_openai.adapters import OpenAIGenerationAdapter
+from aiollm_openai.adapters.conversions import output_text
+from aiollm_openai.methods import CreateResponse, StreamResponse
+from aiollm_openai.types import Response, ResponseStreamEvent
+from aiollm_openai.types.options import OpenAIGenerationOptions
+from tests import test_responses as openai
+from tests.contracts.update import event_tags, type_tags
 
 CONTRACTS = Path(__file__).parent / "contracts"
 
@@ -129,7 +130,7 @@ def modules(
     """Import every module of a package.
 
     Args:
-        package: The package, such as ``aiollm.providers.openai.types``.
+        package: The package, such as ``aiollm_openai.types``.
         skip: Module names left out, such as the hand-written options.
 
     Returns:
@@ -231,10 +232,8 @@ OPENAI = Case(
     examples=([openai.RESPONSE], openai.STREAM),
     adapter=OpenAIGenerationAdapter(),
     options=OpenAIGenerationOptions,
-    models=modules(
-        "aiollm.providers.openai.types", skip=frozenset({"options"})
-    ),
-    params=modules("aiollm.providers.openai.methods.params"),
+    models=modules("aiollm_openai.types", skip=frozenset({"options"})),
+    params=modules("aiollm_openai.methods.params"),
 )
 
 CASES = [pytest.param(case, id=case.name) for case in (OPENAI,)]

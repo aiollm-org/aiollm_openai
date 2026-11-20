@@ -1,0 +1,316 @@
+[project]
+name = "aiollm-openai"
+dynamic = ["version"]
+description = "OpenAI's Responses and Files APIs for aiollm"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+authors = [
+    { name = "GrehBan", email = "maximfeedback19@gmail.com" },
+]
+maintainers = [
+    { name = "GrehBan", email = "maximfeedback19@gmail.com" },
+]
+keywords = [
+    "ai",
+    "llm",
+    "openai",
+    "responses-api",
+    "api-client",
+    "async",
+    "asyncio",
+    "aiohttp",
+    "pydantic",
+    "typed",
+    "streaming",
+]
+# No "License ::" classifier: PEP 639 replaces it with the SPDX
+# expression in `license`, and a build that has both fails.
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Framework :: AsyncIO",
+    "Framework :: Pydantic :: 2",
+    "Framework :: aiohttp",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+# The core, pinned to a commit of aiollm-org/aiollm until it is on PyPI
+# as aiollm-core (CONTRIBUTING.md, "A change in the core and here").
+dependencies = [
+    "aiollm @ git+https://github.com/aiollm-org/aiollm@fb68c9410b33565b13de54a44f26823728d73c28",
+    "pydantic>=2.14.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/aiollm-org/aiollm_openai"
+Documentation = "https://aiollm-org.github.io/aiollm/"
+Repository = "https://github.com/aiollm-org/aiollm_openai"
+Issues = "https://github.com/aiollm-org/aiollm_openai/issues"
+Changelog = "https://github.com/aiollm-org/aiollm_openai/blob/master/CHANGELOG.md"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/aiollm_openai/__meta__.py"
+
+[tool.hatch.metadata]
+# The git pin of the core above; PyPI refuses it, so the first release
+# waits for aiollm-core on PyPI.
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiollm_openai"]
+
+[dependency-groups]
+# The generator of the types, at the commit they were made with;
+# scripts/generate_types.py runs it (CONTRIBUTING.md).
+codegen = [
+    "aiollm-codegen",
+]
+dev = [
+    "mypy>=2.4.0",
+    "pre-commit>=4.7.0",
+    "pyright>=1.1.414",
+    "ruff>=0.17.3",
+    "rumdl>=0.3.2",
+    "towncrier>=26.9.0",
+    "types-jsonschema>=4.26.0.20261006",
+    "types-pyyaml>=6.0.12.20261103",
+]
+test = [
+    "aiollm[testing] @ git+https://github.com/aiollm-org/aiollm@fb68c9410b33565b13de54a44f26823728d73c28",
+    "pytest-cov>=7.1.0",
+    "pytest-html>=4.2.0",
+    "pytest-mypy>=1.1.0",
+    "pyyaml>=6.0.3",
+]
+
+[tool.uv.sources]
+aiollm-codegen = { git = "https://github.com/aiollm-org/aiollm_codegen", rev = "e8702bffd3e623d03f3285fb4727f11892b75772" }
+
+[tool.ruff]
+line-length = 79
+target-version = "py313"
+src = ["src"]
+extend-exclude = [
+    "build",
+    "dist",
+    "venv",
+    ".venv",
+    "dev",
+    "scripts",
+    "*.egg-info",
+]
+
+
+[tool.ruff.lint]
+select = [
+    "C90", # mccabe: cyclomatic complexity, see [tool.ruff.lint.mccabe]
+    "A", # flake8-builtins
+    "B", # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "D", # pydocstyle
+    "DTZ", # flake8-datetimez
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "G", # flake8-logging-format: lazy logging arguments
+    "I", # isort
+    "LOG", # flake8-logging
+    "PERF", # perflint
+    "PL", # pylint
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "UP", # pyupgrade
+]
+ignore = [
+    "A002",
+    "A005",
+    "B008",
+    "PLC0415",
+    "PLC1901",
+    "PLR0904",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "PLR0917",
+    "PLR6301",
+    "PLW2901",
+    "PLW3201",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "D", # docstrings are not required in tests
+    "PLR2004", # magic values are expected in asserts
+]
+
+[tool.ruff.lint.mccabe]
+# mccabe's own default. Every "case" of a "match" counts as a branch, so a
+# lower limit flags flat dispatchers (by format, by SSE field) that read
+# well as they are; 10 catches functions that have really grown.
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["aiollm_openai"]
+# The core gets a section of its own, after the third-party one, so the
+# generated modules keep the import layout aiollm-codegen writes.
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "aiollm",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+aiollm = ["aiollm"]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = [
+    "-ra",
+    "--strict-markers",
+]
+markers = [
+    "integration: tests against a local aiohttp server",
+    "typing: static type checks",
+]
+filterwarnings = ["error"]
+
+[tool.towncrier]
+# Each change is a fragment in CHANGES/, named after its pull request
+# (CHANGES/27.fixed.md) or, before it has one, "+" and a slug
+# (CHANGES/+redirect-log.fixed.md). `towncrier build --version X.Y.Z`
+# turns them into the CHANGELOG section of a release; the sections are
+# Keep a Changelog's, in its order.
+package = "aiollm_openai"
+package_dir = "src"
+directory = "CHANGES"
+filename = "CHANGELOG.md"
+start_string = "<!-- towncrier release notes start -->\n"
+title_format = "## [{version}] - {project_date}"
+issue_format = "[#{issue}](https://github.com/aiollm-org/aiollm_openai/pull/{issue})"
+orphan_prefix = "+"
+ignore = [".gitkeep", "README.md"]
+wrap = true
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name = "Deprecated"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removed"
+name = "Removed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "security"
+name = "Security"
+showcontent = true
+
+[tool.coverage.run]
+branch = true
+source = ["aiollm_openai"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+fail_under = 98
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "^\\s*\\.\\.\\.$",
+]
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+python_version = "3.13"
+show_error_codes = true
+show_error_context = true
+pretty = true
+ignore_missing_imports = false
+warn_unused_configs = true
+disallow_subclassing_any = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+follow_imports_for_stubs = true
+namespace_packages = true
+show_absolute_path = true
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "strict"
+# mypy is the source of truth; these pyright-only diagnostics are disabled.
+# isinstance() narrowing of Any values (JSON bodies, request payloads)
+# yields partially unknown types such as dict[Unknown, Unknown].
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+
+[tool.rumdl]
+
+[tool.rumdl.MD024]
+siblings_only = true
+
+[tool.rumdl.per-file-ignores]
+"CHANGELOG.md" = ["MD024"]
+"README.md" = ["MD013"]
+"CLAUDE.md" = ["MD013"]
+"CONTRIBUTING.md" = ["MD013"]
+".claude/**" = ["MD013"]

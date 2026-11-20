@@ -1,18 +1,18 @@
 """Follow OpenAI's pinned OpenAPI file and refresh what it makes.
 
-Run from the aiollm checkout (``.github/workflows/upstream.yml`` runs it
+Run from the aiollm_openai checkout (``.github/workflows/upstream.yml`` runs it
 every week):
 
-    uv run python scripts/openai/refresh_upstream.py --out DIR
+    uv run python scripts/refresh_upstream.py --out DIR
 
 It compares the commit of ``OPENAI_OPENAPI_URL`` in
-``scripts/openai/generate_types.py`` with the newest commit of
+``scripts/generate_types.py`` with the newest commit of
 ``openai/openai-openapi`` that changed ``openapi.yaml``. A pin that is
 behind is moved (the URL and the SHA-256), then the contract snapshot is
 rebuilt and the types regenerated, so the working tree holds the whole
 change for a pull request; ``DIR/pull-request.md`` describes it, with the
 public names the new types add or remove against
-``tests/providers/openai/public_api.json``, which a person updates.
+``tests/public_api.json``, which a person updates.
 Under GitHub Actions the output ``pins`` says whether the file was
 written.
 """
@@ -32,9 +32,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
-ROOT: Final = Path(__file__).resolve().parents[2]
-SCRIPT: Final = ROOT / "scripts" / "openai" / "generate_types.py"
-PUBLIC_API: Final = ROOT / "tests" / "providers" / "openai" / "public_api.json"
+ROOT: Final = Path(__file__).resolve().parents[1]
+SCRIPT: Final = ROOT / "scripts" / "generate_types.py"
+PUBLIC_API: Final = ROOT / "tests" / "public_api.json"
 
 EXPORTS: Final = (
     "import importlib, json, sys; "
@@ -220,7 +220,7 @@ def names_section(names: list[Names]) -> str:
         return "No public name is added or removed.\n"
     lines = [
         "The public names differ from",
-        "`tests/providers/openai/public_api.json`, so",
+        "`tests/public_api.json`, so",
         "`test_the_public_api_matches_its_snapshot` fails until it is",
         "updated; a removed or renamed name is a breaking change:",
         "",
@@ -255,12 +255,12 @@ def table(changes: list[Change]) -> str:
 PULL_REQUEST: Final = """\
 The weekly check found a new version of OpenAI's OpenAPI file. This
 pull request moves the pin, rebuilds the contract snapshot
-(`tests/providers/openai/contracts/`) and regenerates OpenAI's types.
+(`tests/contracts/`) and regenerates OpenAI's types.
 
 {table}
 {names}
 Before merging, read the diff of the snapshot and of
-`src/aiollm/providers/openai`:
+`src/aiollm_openai`:
 
 - a field, type or event that was removed or narrowed is a breaking
   change: add a `**Breaking:**` fragment to `CHANGES/`;
@@ -269,7 +269,7 @@ Before merging, read the diff of the snapshot and of
   until it is fixed or removed by hand.
 
 Opened by `.github/workflows/upstream.yml`
-(`scripts/openai/refresh_upstream.py`).
+(`scripts/refresh_upstream.py`).
 """
 
 
@@ -311,7 +311,7 @@ def main() -> None:
                 "run",
                 "python",
                 "-m",
-                "tests.providers.openai.contracts.update",
+                "tests.contracts.update",
                 **env,
             )
             run("uv", "run", "python", str(SCRIPT), **env)

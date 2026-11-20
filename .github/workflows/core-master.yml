@@ -1,0 +1,26 @@
+name: core master
+
+# The tests against the newest core, not the pinned one: a change of
+# aiollm's master that breaks this package shows up here before a
+# release of the core does. A failure is a reason to look, not a broken
+# build: the pinned core stays what the other workflows test.
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-master:
+    name: tests on the core's master
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv sync --all-groups --no-group codegen --locked
+      - run: >-
+          uv pip install --reinstall-package aiollm
+          "aiollm[testing] @ git+https://github.com/aiollm-org/aiollm@master"
+      - run: uv run --no-sync pytest

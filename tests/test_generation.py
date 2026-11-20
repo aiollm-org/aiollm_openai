@@ -19,13 +19,6 @@ from aiollm.http.exceptions.status import (
     APIStatusError,
     QuotaExceededError,
 )
-from aiollm.providers.openai import OpenAIClient
-from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
-from aiollm.providers.openai.adapters.conversions import output_text
-from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
-from aiollm.providers.openai.client import session_factory
-from aiollm.providers.openai.methods import CreateResponse, StreamResponse
-from aiollm.providers.openai.types import Response, ResponseStreamEvent
 from aiollm.testing import TEST_TOKEN, LocalAPI, Reply
 from aiollm.testing.aiohttp import Recorder
 from aiollm.types.requests import (
@@ -42,7 +35,15 @@ from aiollm.types.responses import (
     TextDeltaEvent,
     TokenUsage,
 )
-from tests.providers.openai.test_responses import (
+
+from aiollm_openai import OpenAIClient
+from aiollm_openai.adapters import OpenAIGenerationAdapter
+from aiollm_openai.adapters.conversions import output_text
+from aiollm_openai.api import PROVIDER as OPENAI_PROVIDER
+from aiollm_openai.client import session_factory
+from aiollm_openai.methods import CreateResponse, StreamResponse
+from aiollm_openai.types import Response, ResponseStreamEvent
+from tests.test_responses import (
     MESSAGE,
     RESPONSE,
     STREAM,

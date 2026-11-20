@@ -22,13 +22,14 @@ import pytest
 from pydantic import MISSING, BaseModel
 
 from aiollm.enums import Effort, ToolChoice
-from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
-from aiollm.providers.openai.methods import CreateFile, CreateResponse
-from aiollm.providers.openai.types.options import (
+from aiollm.types.requests import GenerationRequest, Tool
+
+from aiollm_openai.adapters import OpenAIGenerationAdapter
+from aiollm_openai.methods import CreateFile, CreateResponse
+from aiollm_openai.types.options import (
     OpenAIFileOptions,
     OpenAIGenerationOptions,
 )
-from aiollm.types.requests import GenerationRequest, Tool
 
 CASES = [(OpenAIGenerationOptions, CreateResponse, OpenAIGenerationAdapter())]
 

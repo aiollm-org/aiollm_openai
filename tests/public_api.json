@@ -1,18 +1,19 @@
 {
-  "aiollm.providers.openai": [
+  "aiollm_openai": [
     "OPENAI_API",
     "OpenAIAPI",
     "OpenAIClient",
-    "OpenAIErrorResolver"
+    "OpenAIErrorResolver",
+    "__version__"
   ],
-  "aiollm.providers.openai.adapters": [
+  "aiollm_openai.adapters": [
     "OpenAIFilesAdapter",
     "OpenAIGenerationAdapter",
     "output_text",
     "reasoning_summary",
     "tool_calls"
   ],
-  "aiollm.providers.openai.methods": [
+  "aiollm_openai.methods": [
     "CreateFile",
     "CreateResponse",
     "DeleteFile",
@@ -22,7 +23,7 @@
     "RetrieveFile",
     "StreamResponse"
   ],
-  "aiollm.providers.openai.methods.params": [
+  "aiollm_openai.methods.params": [
     "AccessProgramsParam",
     "AdditionalToolsItemParam",
     "Annotation",
@@ -255,7 +256,7 @@
     "WebSearchTool",
     "WebSearchToolCall"
   ],
-  "aiollm.providers.openai.types": [
+  "aiollm_openai.types": [
     "AccessProgramsBody",
     "AdditionalTools",
     "AdditionalToolsItemParam",

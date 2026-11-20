@@ -1,12 +1,12 @@
 """OpenAI's own types and the options of a generation call.
 
 Every module but ``options`` is written by aiollm-codegen through
-``scripts/openai/generate_types.py``; do not edit them by hand.
+``scripts/generate_types.py``; do not edit them by hand.
 """
 
 from __future__ import annotations
 
-from aiollm.providers.openai.types.options import (
+from aiollm_openai.types.options import (
     OpenAIFileOptions,
     OpenAIGenerationOptions,
     OpenAIReasoningOptions,

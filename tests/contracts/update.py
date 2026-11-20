@@ -17,7 +17,7 @@ hand.
 Usage::
 
     export OPENAI_OPENAPI=<openapi.yaml>
-    uv run python -m tests.providers.openai.contracts.update
+    uv run python -m tests.contracts.update
 """
 
 from __future__ import annotations

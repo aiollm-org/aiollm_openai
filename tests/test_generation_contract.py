@@ -11,10 +11,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from aiollm.providers.openai import OpenAIClient
-from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
-from aiollm.providers.openai.client import session_factory as openai_factory
-from aiollm.providers.openai.methods import StreamResponse
 from aiollm.testing.contract.generation import (
     CALLS,
     SCHEMA,
@@ -22,7 +18,12 @@ from aiollm.testing.contract.generation import (
     GenerationContract,
 )
 from aiollm.types.responses import TokenUsage
-from tests.providers.openai import test_responses as openai
+
+from aiollm_openai import OpenAIClient
+from aiollm_openai.api import PROVIDER as OPENAI_PROVIDER
+from aiollm_openai.client import session_factory as openai_factory
+from aiollm_openai.methods import StreamResponse
+from tests import test_responses as openai
 
 
 def openai_called() -> dict[str, Any]:
