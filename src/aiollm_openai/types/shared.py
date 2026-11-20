@@ -458,7 +458,7 @@ type FunctionCallOutputItemParamNamespace = Annotated[
     str,
     Field(
         description=("The namespace of the tool that produced the output."),
-        max_length=64,
+        max_length=128,
         min_length=1,
         pattern="^[a-zA-Z0-9_-]+$",
     ),
@@ -1891,7 +1891,10 @@ class ContainerAutoParam(BaseAPITypeExtra):
             available to your code.
         network_policy: Network access policy for the container.
         skills: An optional list of skills referenced by id or inline
-            data.
+            data. Across all inline skills in this list, decoded ZIP
+            data must total at most 50 MiB and Base64 text must total
+            at most 70,254,592 characters, including line breaks.
+            Skill references do not count toward these limits.
     """
 
     __upstream_schema__ = "ContainerAutoParam"
@@ -1926,7 +1929,13 @@ class ContainerAutoParam(BaseAPITypeExtra):
         list[ContainerAutoParamSkills] | None,
         Field(
             description=(
-                "An optional list of skills referenced by id or inline data."
+                "An optional list of skills referenced by id or"
+                " inline data. Across all inline skills in this"
+                " list, decoded ZIP data must total at most 50 "
+                "MiB and Base64 text must total at most "
+                "70,254,592 characters, including line breaks. "
+                "Skill references do not count toward these "
+                "limits."
             ),
             max_length=200,
         ),
