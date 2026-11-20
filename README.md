@@ -8,15 +8,13 @@ OpenAI's Responses and Files APIs for [aiollm](https://github.com/aiollm-org/aio
 
 ## Installation
 
-The package requires Python 3.13 or newer. It is not on PyPI yet, so install it from source; the core, [aiollm-core](https://pypi.org/project/aiollm-core/), comes from PyPI:
+The package requires Python 3.13 or newer and installs the core it needs, [aiollm-core](https://pypi.org/project/aiollm-core/):
 
 ```bash
-git clone https://github.com/aiollm-org/aiollm_openai.git
-cd aiollm_openai
-uv sync
+pip install aiollm-openai
 ```
 
-Or with pip: `pip install -e .`
+Or with uv: `uv add aiollm-openai`. To work on the package itself, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Quick start
 
