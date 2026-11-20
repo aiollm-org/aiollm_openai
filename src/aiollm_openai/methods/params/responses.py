@@ -50,6 +50,44 @@ from .tools import (
     WebSearchToolCall,
 )
 
+type BackgroundCompletionWindowEnum = Literal["soonest", "2h", "8h"]
+
+
+class BackgroundOptionsParam(BaseAPIType):
+    """Options for background execution.
+
+    Attributes:
+        completion_window: The completion window for background
+            execution. Defaults to `soonest`; `2h` and `8h` select
+            discounted background execution.
+        continuation_id: A customer-provided opaque identifier used
+            to prioritize related background requests. It does not
+            add prior history to the input.
+    """
+
+    __upstream_schema__ = "BackgroundOptionsParam"
+    model_config = ConfigDict(extra="forbid")
+    completion_window: Annotated[
+        BackgroundCompletionWindowEnum | MISSING,
+        Field(
+            description=(
+                "The completion window for background "
+                "execution. Defaults to `soonest`; `2h` and "
+                "`8h` select discounted background execution."
+            )
+        ),
+    ] = MISSING
+    continuation_id: Annotated[
+        str | MISSING,
+        Field(
+            description=(
+                "A customer-provided opaque identifier used to "
+                "prioritize related background requests. It "
+                "does not add prior history to the input."
+            )
+        ),
+    ] = MISSING
+
 
 class CompactionTriggerItemParam(BaseAPIType):
     """Compacts the current context.
@@ -393,7 +431,9 @@ type ModelIdsShared = Annotated[
     str
     | Literal[
         "gpt-6-astra",
+        "gpt-6.2-astra",
         "gpt-6.1-sol",
+        "gpt-6.2-sol",
         "gpt-6.1-terra",
         "gpt-6-sol",
         "gpt-6-luna",
@@ -483,7 +523,7 @@ type ModelIdsShared = Annotated[
         "gpt-3.5-turbo-0125",
         "gpt-3.5-turbo-16k-0613",
     ],
-    Field(examples=["gpt-6-astra"]),
+    Field(examples=["gpt-6.2-astra"]),
 ]
 type ModelResponsePropertiesTopLogprobs = Annotated[
     int,
@@ -1184,10 +1224,12 @@ type ModelIdsResponses = Annotated[
         "gpt-daybreak-blue-latest",
         "gpt-daybreak-red-latest",
         "gpt-5.6-cyber",
+        "gpt-6-cyber",
         "gpt-rosalind-research",
         "gpt-6-rosalind",
+        "gpt-6.2-astra-law",
     ],
-    Field(examples=["gpt-6-astra"]),
+    Field(examples=["gpt-6.2-astra"]),
 ]
 
 
@@ -1466,9 +1508,9 @@ class ResponseProperties(BaseAPIType):
 
     Attributes:
         model: Model ID used to generate the response, like
-            `gpt-6-astra`. OpenAI offers a wide range of models with
-            different capabilities, performance characteristics, and
-            price points. Refer to the [model
+            `gpt-6.2-astra`. OpenAI offers a wide range of models
+            with different capabilities, performance characteristics,
+            and price points. Refer to the [model
             guide](https://developers.openai.com/api/docs/models) to
             browse and compare available models.
         text: Configuration options for a text response from the
@@ -1494,8 +1536,8 @@ class ResponseProperties(BaseAPIType):
         Field(
             description=(
                 "Model ID used to generate the response, like "
-                "`gpt-6-astra`. OpenAI\noffers a wide range of "
-                "models with different capabilities, "
+                "`gpt-6.2-astra`. OpenAI\noffers a wide range "
+                "of models with different capabilities, "
                 "performance\ncharacteristics, and price "
                 "points. Refer to the [model "
                 "guide](https://developers.openai.com/api/docs/"
@@ -1630,9 +1672,9 @@ class StreamResponseParams(BaseAPIType):
             information. [Learn
     more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
         model: Model ID used to generate the response, like
-            `gpt-6-astra`. OpenAI offers a wide range of models with
-            different capabilities, performance characteristics, and
-            price points. Refer to the [model
+            `gpt-6.2-astra`. OpenAI offers a wide range of models
+            with different capabilities, performance characteristics,
+            and price points. Refer to the [model
             guide](https://developers.openai.com/api/docs/models) to
             browse and compare available models.
         text: Configuration options for a text response from the
@@ -1692,6 +1734,10 @@ class StreamResponseParams(BaseAPIType):
             retention program).
         moderation: Configuration for running moderation on the input
             and output of this response.
+        background_options: Options for background execution on HTTP
+            requests. The `2h` and `8h` completion windows require
+            `background: true`, Standard processing, and `stream:
+            false` or omitted.
         conversation: The conversation that this response belongs to.
             Items from this conversation are prepended to
             `input_items` for this response request. Input items and
@@ -1744,8 +1790,8 @@ class StreamResponseParams(BaseAPIType):
         Field(
             description=(
                 "Model ID used to generate the response, like "
-                "`gpt-6-astra`. OpenAI\noffers a wide range of "
-                "models with different capabilities, "
+                "`gpt-6.2-astra`. OpenAI\noffers a wide range "
+                "of models with different capabilities, "
                 "performance\ncharacteristics, and price "
                 "points. Refer to the [model "
                 "guide](https://developers.openai.com/api/docs/"
@@ -1774,6 +1820,17 @@ class StreamResponseParams(BaseAPIType):
     store: bool | None | MISSING = MISSING
     instructions: str | None | MISSING = MISSING
     moderation: ModerationParam | None | MISSING = MISSING
+    background_options: Annotated[
+        BackgroundOptionsParam | MISSING,
+        Field(
+            description=(
+                "Options for background execution on HTTP "
+                "requests. The `2h` and `8h`\ncompletion "
+                "windows require `background: true`, Standard "
+                "processing,\nand `stream: false` or omitted."
+            )
+        ),
+    ] = MISSING
     stream: Literal[True] = True
     stream_options: ResponseStreamOptions | None | MISSING = MISSING
     conversation: ConversationParam | None | MISSING = MISSING
@@ -1815,9 +1872,9 @@ class CreateResponse(BaseAPIType):
             information. [Learn
     more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
         model: Model ID used to generate the response, like
-            `gpt-6-astra`. OpenAI offers a wide range of models with
-            different capabilities, performance characteristics, and
-            price points. Refer to the [model
+            `gpt-6.2-astra`. OpenAI offers a wide range of models
+            with different capabilities, performance characteristics,
+            and price points. Refer to the [model
             guide](https://developers.openai.com/api/docs/models) to
             browse and compare available models.
         text: Configuration options for a text response from the
@@ -1877,6 +1934,10 @@ class CreateResponse(BaseAPIType):
             retention program).
         moderation: Configuration for running moderation on the input
             and output of this response.
+        background_options: Options for background execution on HTTP
+            requests. The `2h` and `8h` completion windows require
+            `background: true`, Standard processing, and `stream:
+            false` or omitted.
         conversation: The conversation that this response belongs to.
             Items from this conversation are prepended to
             `input_items` for this response request. Input items and
@@ -1929,8 +1990,8 @@ class CreateResponse(BaseAPIType):
         Field(
             description=(
                 "Model ID used to generate the response, like "
-                "`gpt-6-astra`. OpenAI\noffers a wide range of "
-                "models with different capabilities, "
+                "`gpt-6.2-astra`. OpenAI\noffers a wide range "
+                "of models with different capabilities, "
                 "performance\ncharacteristics, and price "
                 "points. Refer to the [model "
                 "guide](https://developers.openai.com/api/docs/"
@@ -1959,6 +2020,17 @@ class CreateResponse(BaseAPIType):
     store: bool | None | MISSING = MISSING
     instructions: str | None | MISSING = MISSING
     moderation: ModerationParam | None | MISSING = MISSING
+    background_options: Annotated[
+        BackgroundOptionsParam | MISSING,
+        Field(
+            description=(
+                "Options for background execution on HTTP "
+                "requests. The `2h` and `8h`\ncompletion "
+                "windows require `background: true`, Standard "
+                "processing,\nand `stream: false` or omitted."
+            )
+        ),
+    ] = MISSING
     stream: bool | None | MISSING = MISSING
     stream_options: ResponseStreamOptions | None | MISSING = MISSING
     conversation: ConversationParam | None | MISSING = MISSING
@@ -1998,9 +2070,9 @@ class CreateResponseParams(BaseAPIType):
             information. [Learn
     more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
         model: Model ID used to generate the response, like
-            `gpt-6-astra`. OpenAI offers a wide range of models with
-            different capabilities, performance characteristics, and
-            price points. Refer to the [model
+            `gpt-6.2-astra`. OpenAI offers a wide range of models
+            with different capabilities, performance characteristics,
+            and price points. Refer to the [model
             guide](https://developers.openai.com/api/docs/models) to
             browse and compare available models.
         text: Configuration options for a text response from the
@@ -2060,6 +2132,10 @@ class CreateResponseParams(BaseAPIType):
             retention program).
         moderation: Configuration for running moderation on the input
             and output of this response.
+        background_options: Options for background execution on HTTP
+            requests. The `2h` and `8h` completion windows require
+            `background: true`, Standard processing, and `stream:
+            false` or omitted.
         conversation: The conversation that this response belongs to.
             Items from this conversation are prepended to
             `input_items` for this response request. Input items and
@@ -2112,8 +2188,8 @@ class CreateResponseParams(BaseAPIType):
         Field(
             description=(
                 "Model ID used to generate the response, like "
-                "`gpt-6-astra`. OpenAI\noffers a wide range of "
-                "models with different capabilities, "
+                "`gpt-6.2-astra`. OpenAI\noffers a wide range "
+                "of models with different capabilities, "
                 "performance\ncharacteristics, and price "
                 "points. Refer to the [model "
                 "guide](https://developers.openai.com/api/docs/"
@@ -2142,6 +2218,17 @@ class CreateResponseParams(BaseAPIType):
     store: bool | None | MISSING = MISSING
     instructions: str | None | MISSING = MISSING
     moderation: ModerationParam | None | MISSING = MISSING
+    background_options: Annotated[
+        BackgroundOptionsParam | MISSING,
+        Field(
+            description=(
+                "Options for background execution on HTTP "
+                "requests. The `2h` and `8h`\ncompletion "
+                "windows require `background: true`, Standard "
+                "processing,\nand `stream: false` or omitted."
+            )
+        ),
+    ] = MISSING
     stream: Literal[False] | None | MISSING = MISSING
     stream_options: ResponseStreamOptions | None | MISSING = MISSING
     conversation: ConversationParam | None | MISSING = MISSING
@@ -2153,6 +2240,7 @@ class CreateResponseParams(BaseAPIType):
     )
 
 
+BackgroundOptionsParam.model_rebuild()
 CompactionTriggerItemParam.model_rebuild()
 ContextManagementParam.model_rebuild()
 ConversationParam2.model_rebuild()
@@ -2182,6 +2270,8 @@ CreateResponse.model_rebuild()
 CreateResponseParams.model_rebuild()
 __all__ = [
     "AccessProgramsParam",
+    "BackgroundCompletionWindowEnum",
+    "BackgroundOptionsParam",
     "CompactionTriggerItemParam",
     "ContextManagementParam",
     "ContextManagementParamCompactThreshold",

@@ -1538,9 +1538,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "computer_screenshot"
-     ],
+     "const": "computer_screenshot",
      "default": "computer_screenshot",
      "description": "Specifies the event type. For a computer screenshot, this property is \nalways set to `computer_screenshot`.\n"
     },
@@ -1636,9 +1634,7 @@
     "type": {
      "type": "string",
      "description": "The type of the computer tool call output. Always `computer_call_output`.\n",
-     "enum": [
-      "computer_call_output"
-     ],
+     "const": "computer_call_output",
      "default": "computer_call_output"
     },
     "id": {
@@ -1681,9 +1677,7 @@
     "type": {
      "type": "string",
      "description": "The type of the computer tool call output. Always `computer_call_output`.\n",
-     "enum": [
-      "computer_call_output"
-     ],
+     "const": "computer_call_output",
      "default": "computer_call_output"
     },
     "id": {
@@ -1813,7 +1807,7 @@
      },
      "type": "array",
      "maxItems": 200,
-     "description": "An optional list of skills referenced by id or inline data."
+     "description": "An optional list of skills referenced by id or inline data. Across all inline skills in this list, decoded ZIP data must total at most 50 MiB and Base64 text must total at most 70,254,592 characters, including line breaks. Skill references do not count toward these limits."
     }
    },
    "type": "object",
@@ -2795,7 +2789,7 @@
      "anyOf": [
       {
        "type": "string",
-       "maxLength": 64,
+       "maxLength": 128,
        "minLength": 1,
        "pattern": "^[a-zA-Z0-9_-]+$",
        "description": "The namespace of the tool that produced the output."
@@ -3582,9 +3576,7 @@
     },
     "type": {
      "type": "string",
-     "enum": [
-      "function_call"
-     ],
+     "const": "function_call",
      "description": "The type of the function tool call. Always `function_call`.\n"
     },
     "call_id": {
@@ -3645,9 +3637,7 @@
     },
     "type": {
      "type": "string",
-     "enum": [
-      "function_call_output"
-     ],
+     "const": "function_call_output",
      "description": "The type of the function tool call output. Always `function_call_output`.\n"
     },
     "call_id": {
@@ -3714,9 +3704,7 @@
     },
     "type": {
      "type": "string",
-     "enum": [
-      "function_call_output"
-     ],
+     "const": "function_call_output",
      "description": "The type of the function tool call output. Always `function_call_output`.\n"
     },
     "call_id": {
@@ -4006,8 +3994,8 @@
         "gpt-image-1.5",
         "chatgpt-image-latest"
        ],
-       "description": "The image generation model to use. One of `gpt-image-1-mini`,\n`gpt-image-1.5`, `gpt-image-2`,\n`gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,\n`gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,\n`gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`,\n`gpt-image-2.6-flare`, or `chatgpt-image-latest`. Default:\n`gpt-image-2`.\n\n`gpt-image-1` was shut down on October 23, 2026. Use\n`gpt-image-2.5-sunburst` or `gpt-image-2.5-flare` instead.\n",
-       "default": "gpt-image-2"
+       "description": "The image generation model to use. One of `gpt-image-1-mini`,\n`gpt-image-1.5`, `gpt-image-2`,\n`gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,\n`gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,\n`gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`,\n`gpt-image-2.6-flare`, or `chatgpt-image-latest`. Default:\n`gpt-image-2.6-sunburst`.\n\n`gpt-image-1` was shut down on October 23, 2026. Use\n`gpt-image-2.5-sunburst` or `gpt-image-2.5-flare` instead.\n",
+       "default": "gpt-image-2.6-sunburst"
       }
      ]
     },
@@ -4767,9 +4755,7 @@
     "type": {
      "type": "string",
      "description": "The type of the message input. Always set to `message`.\n",
-     "enum": [
-      "message"
-     ]
+     "const": "message"
     },
     "role": {
      "type": "string",
@@ -4805,6 +4791,16 @@
    "items": {
     "$ref": "#/$defs/InputContent"
    }
+  },
+  "InputRemovalReason": {
+   "type": "string",
+   "enum": [
+    "organization_mismatch",
+    "end_user_mismatch",
+    "model_mismatch",
+    "prefix_mismatch",
+    "turn_boundary"
+   ]
   },
   "InputTextContent": {
    "properties": {
@@ -5287,9 +5283,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp_approval_request"
-     ],
+     "const": "mcp_approval_request",
      "description": "The type of the item. Always `mcp_approval_request`.\n"
     },
     "id": {
@@ -5324,9 +5318,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp_approval_response"
-     ],
+     "const": "mcp_approval_response",
      "description": "The type of the item. Always `mcp_approval_response`.\n"
     },
     "id": {
@@ -5374,9 +5366,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp_approval_response"
-     ],
+     "const": "mcp_approval_response",
      "description": "The type of the item. Always `mcp_approval_response`.\n"
     },
     "id": {
@@ -5418,9 +5408,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp_list_tools"
-     ],
+     "const": "mcp_list_tools",
      "description": "The type of the item. Always `mcp_list_tools`.\n"
     },
     "id": {
@@ -5528,9 +5516,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp"
-     ],
+     "const": "mcp",
      "description": "The type of the MCP tool. Always `mcp`."
     },
     "server_label": {
@@ -5674,9 +5660,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "mcp_call"
-     ],
+     "const": "mcp_call",
      "description": "The type of the item. Always `mcp_call`.\n"
     },
     "id": {
@@ -5903,8 +5887,10 @@
       "gpt-daybreak-blue-latest",
       "gpt-daybreak-red-latest",
       "gpt-5.6-cyber",
+      "gpt-6-cyber",
       "gpt-rosalind-research",
-      "gpt-6-rosalind"
+      "gpt-6-rosalind",
+      "gpt-6.2-astra-law"
      ]
     }
    ]
@@ -5918,7 +5904,9 @@
      "type": "string",
      "enum": [
       "gpt-6-astra",
+      "gpt-6.2-astra",
       "gpt-6.1-sol",
+      "gpt-6.2-sol",
       "gpt-6.1-terra",
       "gpt-6-sol",
       "gpt-6-luna",
@@ -6444,16 +6432,12 @@
     "type": {
      "type": "string",
      "description": "The type of the output message. Always `message`.\n",
-     "enum": [
-      "message"
-     ]
+     "const": "message"
     },
     "role": {
      "type": "string",
      "description": "The role of the output message. Always `assistant`.\n",
-     "enum": [
-      "assistant"
-     ]
+     "const": "assistant"
     },
     "content": {
      "type": "array",
@@ -7106,6 +7090,38 @@
     "max"
    ]
   },
+  "ReasoningInputTransformation": {
+   "properties": {
+    "type": {
+     "type": "string",
+     "enum": [
+      "reasoning"
+     ],
+     "default": "reasoning"
+    },
+    "id": {
+     "type": "string",
+     "description": "The original reasoning item ID."
+    },
+    "action": {
+     "type": "string",
+     "enum": [
+      "removed"
+     ],
+     "default": "removed"
+    },
+    "reason": {
+     "$ref": "#/$defs/InputRemovalReason"
+    }
+   },
+   "type": "object",
+   "required": [
+    "type",
+    "id",
+    "action",
+    "reason"
+   ]
+  },
   "ReasoningItem": {
    "type": "object",
    "description": "A description of the chain of thought used by a reasoning model while generating\na response. Be sure to include these items in your `input` to the Responses API\nfor subsequent turns of a conversation if you are manually\n[managing context](https://developers.openai.com/api/docs/guides/conversation-state).\n",
@@ -7347,7 +7363,7 @@
      ]
     },
     "model": {
-     "description": "Model ID used to generate the response, like `gpt-6-astra`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)\nto browse and compare available models.\n",
+     "description": "Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)\nto browse and compare available models.\n",
      "$ref": "#/$defs/ModelIdsResponses"
     },
     "background": {
@@ -7395,7 +7411,7 @@
      "anyOf": [
       {
        "type": "string",
-       "description": "The truncation strategy to use for the model response.\n- `auto`: If the input to this Response exceeds\n  the model's context window size, the model will truncate the\n  response to fit the context window by dropping items from the beginning of the conversation.\n- `disabled` (default): If the input size will exceed the context window\n  size for a model, the request will fail with a 400 error.\n",
+       "description": "The truncation strategy to use for the model response.\n- `auto`: If the input to this Response exceeds\n  the model's context window size, the model will truncate the\n  response to fit the context window by dropping items from the beginning of the conversation.\n  On some models, trimming can begin earlier because the API subtracts the model's\n  maximum output allowance from its input limit, even if you set a lower `max_output_tokens`.\n- `disabled` (default): If the input size will exceed the context window\n  size for a model, the request will fail with a 400 error.\n",
        "enum": [
         "auto",
         "disabled"
@@ -7414,9 +7430,7 @@
     "object": {
      "type": "string",
      "description": "The object type of this resource - always set to `response`.\n",
-     "enum": [
-      "response"
-     ]
+     "const": "response"
     },
     "status": {
      "type": "string",
@@ -7482,6 +7496,13 @@
        "type": "null"
       }
      ]
+    },
+    "input_transformations": {
+     "type": "array",
+     "description": "Reasoning inputs withheld from the model, in input order.",
+     "items": {
+      "$ref": "#/$defs/ReasoningInputTransformation"
+     }
     },
     "output": {
      "type": "array",
@@ -7619,9 +7640,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.audio.delta`.\n",
-     "enum": [
-      "response.audio.delta"
-     ]
+     "const": "response.audio.delta"
     },
     "sequence_number": {
      "type": "integer",
@@ -7645,9 +7664,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.audio.done`.\n",
-     "enum": [
-      "response.audio.done"
-     ]
+     "const": "response.audio.done"
     },
     "sequence_number": {
      "type": "integer",
@@ -7667,9 +7684,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.audio.transcript.delta`.\n",
-     "enum": [
-      "response.audio.transcript.delta"
-     ]
+     "const": "response.audio.transcript.delta"
     },
     "delta": {
      "type": "string",
@@ -7694,9 +7709,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.audio.transcript.done`.\n",
-     "enum": [
-      "response.audio.transcript.done"
-     ]
+     "const": "response.audio.transcript.done"
     },
     "sequence_number": {
      "type": "integer",
@@ -7716,9 +7729,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.code_interpreter_call_code.delta`.",
-     "enum": [
-      "response.code_interpreter_call_code.delta"
-     ]
+     "const": "response.code_interpreter_call_code.delta"
     },
     "output_index": {
      "type": "integer",
@@ -7752,9 +7763,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.code_interpreter_call_code.done`.",
-     "enum": [
-      "response.code_interpreter_call_code.done"
-     ]
+     "const": "response.code_interpreter_call_code.done"
     },
     "output_index": {
      "type": "integer",
@@ -7788,9 +7797,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.code_interpreter_call.completed`.",
-     "enum": [
-      "response.code_interpreter_call.completed"
-     ]
+     "const": "response.code_interpreter_call.completed"
     },
     "output_index": {
      "type": "integer",
@@ -7819,9 +7826,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.code_interpreter_call.in_progress`.",
-     "enum": [
-      "response.code_interpreter_call.in_progress"
-     ]
+     "const": "response.code_interpreter_call.in_progress"
     },
     "output_index": {
      "type": "integer",
@@ -7850,9 +7855,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.code_interpreter_call.interpreting`.",
-     "enum": [
-      "response.code_interpreter_call.interpreting"
-     ]
+     "const": "response.code_interpreter_call.interpreting"
     },
     "output_index": {
      "type": "integer",
@@ -7914,9 +7917,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.completed`.\n",
-     "enum": [
-      "response.completed"
-     ]
+     "const": "response.completed"
     },
     "response": {
      "$ref": "#/$defs/Response",
@@ -7950,9 +7951,7 @@
     },
     "type": {
      "type": "string",
-     "enum": [
-      "configuration_update"
-     ],
+     "const": "configuration_update",
      "description": "The item type. Always `configuration_update`.",
      "default": "configuration_update"
     },
@@ -8001,9 +8000,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.content_part.added`.\n",
-     "enum": [
-      "response.content_part.added"
-     ]
+     "const": "response.content_part.added"
     },
     "item_id": {
      "type": "string",
@@ -8042,9 +8039,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.content_part.done`.\n",
-     "enum": [
-      "response.content_part.done"
-     ]
+     "const": "response.content_part.done"
     },
     "item_id": {
      "type": "string",
@@ -8097,9 +8092,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.created`.\n",
-     "enum": [
-      "response.created"
-     ]
+     "const": "response.created"
     },
     "response": {
      "$ref": "#/$defs/Response",
@@ -8123,9 +8116,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.custom_tool_call_input.delta"
-     ],
+     "const": "response.custom_tool_call_input.delta",
      "description": "The event type identifier."
     },
     "sequence_number": {
@@ -8160,9 +8151,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.custom_tool_call_input.done"
-     ],
+     "const": "response.custom_tool_call_input.done",
      "description": "The event type identifier."
     },
     "sequence_number": {
@@ -8273,9 +8262,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `error`.\n",
-     "enum": [
-      "error"
-     ]
+     "const": "error"
     },
     "code": {
      "anyOf": [
@@ -8323,9 +8310,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.failed`.\n",
-     "enum": [
-      "response.failed"
-     ]
+     "const": "response.failed"
     },
     "sequence_number": {
      "type": "integer",
@@ -8349,9 +8334,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.file_search_call.completed`.\n",
-     "enum": [
-      "response.file_search_call.completed"
-     ]
+     "const": "response.file_search_call.completed"
     },
     "output_index": {
      "type": "integer",
@@ -8380,9 +8363,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.file_search_call.in_progress`.\n",
-     "enum": [
-      "response.file_search_call.in_progress"
-     ]
+     "const": "response.file_search_call.in_progress"
     },
     "output_index": {
      "type": "integer",
@@ -8411,9 +8392,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.file_search_call.searching`.\n",
-     "enum": [
-      "response.file_search_call.searching"
-     ]
+     "const": "response.file_search_call.searching"
     },
     "output_index": {
      "type": "integer",
@@ -8443,9 +8422,7 @@
     "type": {
      "type": "string",
      "description": "The type of response format being defined. Always `json_object`.",
-     "enum": [
-      "json_object"
-     ]
+     "const": "json_object"
     }
    },
    "required": [
@@ -8466,9 +8443,7 @@
     "type": {
      "type": "string",
      "description": "The type of response format being defined. Always `text`.",
-     "enum": [
-      "text"
-     ]
+     "const": "text"
     }
    },
    "required": [
@@ -8482,9 +8457,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.function_call_arguments.delta`.\n",
-     "enum": [
-      "response.function_call_arguments.delta"
-     ]
+     "const": "response.function_call_arguments.delta"
     },
     "item_id": {
      "type": "string",
@@ -8517,9 +8490,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.function_call_arguments.done"
-     ]
+     "const": "response.function_call_arguments.done"
     },
     "item_id": {
      "type": "string",
@@ -8553,9 +8524,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.image_generation_call.completed"
-     ],
+     "const": "response.image_generation_call.completed",
      "description": "The type of the event. Always 'response.image_generation_call.completed'."
     },
     "output_index": {
@@ -8585,9 +8554,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.image_generation_call.generating"
-     ],
+     "const": "response.image_generation_call.generating",
      "description": "The type of the event. Always 'response.image_generation_call.generating'."
     },
     "output_index": {
@@ -8617,9 +8584,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.image_generation_call.in_progress"
-     ],
+     "const": "response.image_generation_call.in_progress",
      "description": "The type of the event. Always 'response.image_generation_call.in_progress'."
     },
     "output_index": {
@@ -8649,9 +8614,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.image_generation_call.partial_image"
-     ],
+     "const": "response.image_generation_call.partial_image",
      "description": "The type of the event. Always 'response.image_generation_call.partial_image'."
     },
     "output_index": {
@@ -8707,9 +8670,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.in_progress`.\n",
-     "enum": [
-      "response.in_progress"
-     ]
+     "const": "response.in_progress"
     },
     "response": {
      "$ref": "#/$defs/Response",
@@ -8733,9 +8694,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.incomplete`.\n",
-     "enum": [
-      "response.incomplete"
-     ]
+     "const": "response.incomplete"
     },
     "response": {
      "$ref": "#/$defs/Response",
@@ -8794,9 +8753,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_call_arguments.delta"
-     ],
+     "const": "response.mcp_call_arguments.delta",
      "description": "The type of the event. Always 'response.mcp_call_arguments.delta'."
     },
     "output_index": {
@@ -8831,9 +8788,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_call_arguments.done"
-     ],
+     "const": "response.mcp_call_arguments.done",
      "description": "The type of the event. Always 'response.mcp_call_arguments.done'."
     },
     "output_index": {
@@ -8868,9 +8823,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_call.completed"
-     ],
+     "const": "response.mcp_call.completed",
      "description": "The type of the event. Always 'response.mcp_call.completed'."
     },
     "item_id": {
@@ -8900,9 +8853,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_call.failed"
-     ],
+     "const": "response.mcp_call.failed",
      "description": "The type of the event. Always 'response.mcp_call.failed'."
     },
     "item_id": {
@@ -8932,9 +8883,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_call.in_progress"
-     ],
+     "const": "response.mcp_call.in_progress",
      "description": "The type of the event. Always 'response.mcp_call.in_progress'."
     },
     "sequence_number": {
@@ -8964,9 +8913,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_list_tools.completed"
-     ],
+     "const": "response.mcp_list_tools.completed",
      "description": "The type of the event. Always 'response.mcp_list_tools.completed'."
     },
     "item_id": {
@@ -8996,9 +8943,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_list_tools.failed"
-     ],
+     "const": "response.mcp_list_tools.failed",
      "description": "The type of the event. Always 'response.mcp_list_tools.failed'."
     },
     "item_id": {
@@ -9028,9 +8973,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.mcp_list_tools.in_progress"
-     ],
+     "const": "response.mcp_list_tools.in_progress",
      "description": "The type of the event. Always 'response.mcp_list_tools.in_progress'."
     },
     "item_id": {
@@ -9060,9 +9003,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.output_item.added`.\n",
-     "enum": [
-      "response.output_item.added"
-     ]
+     "const": "response.output_item.added"
     },
     "output_index": {
      "type": "integer",
@@ -9091,9 +9032,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.output_item.done`.\n",
-     "enum": [
-      "response.output_item.done"
-     ]
+     "const": "response.output_item.done"
     },
     "output_index": {
      "type": "integer",
@@ -9122,9 +9061,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.output_text.annotation.added"
-     ],
+     "const": "response.output_text.annotation.added",
      "description": "The type of the event. Always 'response.output_text.annotation.added'."
     },
     "item_id": {
@@ -9212,7 +9149,7 @@
      ]
     },
     "model": {
-     "description": "Model ID used to generate the response, like `gpt-6-astra`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)\nto browse and compare available models.\n",
+     "description": "Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)\nto browse and compare available models.\n",
      "$ref": "#/$defs/ModelIdsResponses"
     },
     "background": {
@@ -9259,9 +9196,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "response.queued"
-     ],
+     "const": "response.queued",
      "description": "The type of the event. Always 'response.queued'."
     },
     "response": {
@@ -9286,9 +9221,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_summary_part.added`.\n",
-     "enum": [
-      "response.reasoning_summary_part.added"
-     ]
+     "const": "response.reasoning_summary_part.added"
     },
     "item_id": {
      "type": "string",
@@ -9313,9 +9246,7 @@
       "type": {
        "type": "string",
        "description": "The type of the summary part. Always `summary_text`.",
-       "enum": [
-        "summary_text"
-       ]
+       "const": "summary_text"
       },
       "text": {
        "type": "string",
@@ -9344,9 +9275,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_summary_part.done`.\n",
-     "enum": [
-      "response.reasoning_summary_part.done"
-     ]
+     "const": "response.reasoning_summary_part.done"
     },
     "item_id": {
      "type": "string",
@@ -9378,9 +9307,7 @@
       "type": {
        "type": "string",
        "description": "The type of the summary part. Always `summary_text`.",
-       "enum": [
-        "summary_text"
-       ]
+       "const": "summary_text"
       },
       "text": {
        "type": "string",
@@ -9409,9 +9336,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_summary_text.delta`.\n",
-     "enum": [
-      "response.reasoning_summary_text.delta"
-     ]
+     "const": "response.reasoning_summary_text.delta"
     },
     "item_id": {
      "type": "string",
@@ -9450,9 +9375,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_summary_text.done`.\n",
-     "enum": [
-      "response.reasoning_summary_text.done"
-     ]
+     "const": "response.reasoning_summary_text.done"
     },
     "item_id": {
      "type": "string",
@@ -9491,9 +9414,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_text.delta`.\n",
-     "enum": [
-      "response.reasoning_text.delta"
-     ]
+     "const": "response.reasoning_text.delta"
     },
     "item_id": {
      "type": "string",
@@ -9532,9 +9453,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.reasoning_text.done`.\n",
-     "enum": [
-      "response.reasoning_text.done"
-     ]
+     "const": "response.reasoning_text.done"
     },
     "item_id": {
      "type": "string",
@@ -9573,9 +9492,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.refusal.delta`.\n",
-     "enum": [
-      "response.refusal.delta"
-     ]
+     "const": "response.refusal.delta"
     },
     "item_id": {
      "type": "string",
@@ -9614,9 +9531,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.refusal.done`.\n",
-     "enum": [
-      "response.refusal.done"
-     ]
+     "const": "response.refusal.done"
     },
     "item_id": {
      "type": "string",
@@ -10047,9 +9962,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.output_text.delta`.\n",
-     "enum": [
-      "response.output_text.delta"
-     ]
+     "const": "response.output_text.delta"
     },
     "item_id": {
      "type": "string",
@@ -10096,9 +10009,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.output_text.done`.\n",
-     "enum": [
-      "response.output_text.done"
-     ]
+     "const": "response.output_text.done"
     },
     "item_id": {
      "type": "string",
@@ -10235,9 +10146,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.web_search_call.completed`.\n",
-     "enum": [
-      "response.web_search_call.completed"
-     ]
+     "const": "response.web_search_call.completed"
     },
     "output_index": {
      "type": "integer",
@@ -10266,9 +10175,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.web_search_call.in_progress`.\n",
-     "enum": [
-      "response.web_search_call.in_progress"
-     ]
+     "const": "response.web_search_call.in_progress"
     },
     "output_index": {
      "type": "integer",
@@ -10297,9 +10204,7 @@
     "type": {
      "type": "string",
      "description": "The type of the event. Always `response.web_search_call.searching`.\n",
-     "enum": [
-      "response.web_search_call.searching"
-     ]
+     "const": "response.web_search_call.searching"
     },
     "output_index": {
      "type": "integer",
@@ -11569,9 +11474,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "find_in_page"
-     ],
+     "const": "find_in_page",
      "description": "The action type.\n"
     },
     "url": {
@@ -11603,9 +11506,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "open_page"
-     ],
+     "const": "open_page",
      "description": "The action type.\n"
     },
     "url": {
@@ -11632,9 +11533,7 @@
    "properties": {
     "type": {
      "type": "string",
-     "enum": [
-      "search"
-     ],
+     "const": "search",
      "description": "The action type.\n"
     },
     "query": {
@@ -11661,9 +11560,7 @@
       "properties": {
        "type": {
         "type": "string",
-        "enum": [
-         "url"
-        ],
+        "const": "url",
         "description": "The type of source. Always `url`.\n"
        },
        "url": {
@@ -11692,9 +11589,7 @@
      "properties": {
       "type": {
        "type": "string",
-       "enum": [
-        "approximate"
-       ],
+       "const": "approximate",
        "description": "The type of location approximation. Always `approximate`.",
        "default": "approximate"
       },
@@ -11878,9 +11773,7 @@
     },
     "type": {
      "type": "string",
-     "enum": [
-      "web_search_call"
-     ],
+     "const": "web_search_call",
      "description": "The type of the web search tool call. Always `web_search_call`.\n"
     },
     "status": {

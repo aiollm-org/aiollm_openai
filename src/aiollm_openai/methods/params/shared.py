@@ -151,7 +151,7 @@ type FunctionCallOutputItemParamNamespace = Annotated[
     str,
     Field(
         description=("The namespace of the tool that produced the output."),
-        max_length=64,
+        max_length=128,
         min_length=1,
         pattern="^[a-zA-Z0-9_-]+$",
     ),

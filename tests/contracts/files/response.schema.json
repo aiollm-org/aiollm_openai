@@ -19,9 +19,7 @@
     },
     "object": {
      "type": "string",
-     "enum": [
-      "file"
-     ]
+     "const": "file"
     },
     "deleted": {
      "type": "boolean"
@@ -95,9 +93,7 @@
     "object": {
      "type": "string",
      "description": "The object type, which is always `file`.",
-     "enum": [
-      "file"
-     ]
+     "const": "file"
     },
     "purpose": {
      "type": "string",

@@ -63,6 +63,8 @@ from .messages import (
 )
 from .responses import (
     AccessProgramsParam,
+    BackgroundCompletionWindowEnum,
+    BackgroundOptionsParam,
     CompactionTriggerItemParam,
     ContextManagementParam,
     ConversationParam,
@@ -259,6 +261,8 @@ __all__ = [
     "ApplyPatchUpdateFileOperationParam",
     "ApproximateLocation",
     "AutoCodeInterpreterToolParam",
+    "BackgroundCompletionWindowEnum",
+    "BackgroundOptionsParam",
     "CallableToolAllowedCaller",
     "ClickButtonType",
     "ClickParam",
