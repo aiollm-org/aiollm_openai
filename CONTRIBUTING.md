@@ -61,7 +61,7 @@ Open a pull request against `master`. It is merged when these pass:
 |---|---|
 | `lint and types` | ruff, mypy, pyright, the typing tests, the Markdown lint and a regeneration of the types |
 | `tests` | pytest with coverage on Linux and Windows, CPython 3.13, 3.14 and 3.15 |
-| `package` | the wheel in a clean environment, with the core from PyPI |
+| `package` | three clean environments from wheels: this package with the core from PyPI, the core alone, and both providers |
 | `audit` | known vulnerabilities in the locked dependencies (`uv audit`) |
 | `changelog` | a changelog fragment, unless the PR has the `no changelog` label |
 
