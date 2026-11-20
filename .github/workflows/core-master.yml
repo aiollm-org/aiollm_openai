@@ -21,6 +21,6 @@ jobs:
       - uses: astral-sh/setup-uv@v10.3.3
       - run: uv sync --all-groups --no-group codegen --locked
       - run: >-
-          uv pip install --reinstall-package aiollm
-          "aiollm[testing] @ git+https://github.com/aiollm-org/aiollm@master"
+          uv pip install --reinstall-package aiollm-core
+          "aiollm-core[testing] @ git+https://github.com/aiollm-org/aiollm@master"
       - run: uv run --no-sync pytest

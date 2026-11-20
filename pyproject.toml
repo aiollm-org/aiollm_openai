@@ -47,7 +47,7 @@ classifiers = [
 # The core, pinned to a commit of aiollm-org/aiollm until it is on PyPI
 # as aiollm-core (CONTRIBUTING.md, "A change in the core and here").
 dependencies = [
-    "aiollm @ git+https://github.com/aiollm-org/aiollm@fb68c9410b33565b13de54a44f26823728d73c28",
+    "aiollm-core @ git+https://github.com/aiollm-org/aiollm@d2f110956bb0168e3e655f83390f5136f56d3590",
     "pydantic>=2.14.1",
 ]
 
@@ -90,7 +90,7 @@ dev = [
     "types-pyyaml>=6.0.12.20261103",
 ]
 test = [
-    "aiollm[testing] @ git+https://github.com/aiollm-org/aiollm@fb68c9410b33565b13de54a44f26823728d73c28",
+    "aiollm-core[testing] @ git+https://github.com/aiollm-org/aiollm@d2f110956bb0168e3e655f83390f5136f56d3590",
     "pytest-cov>=7.1.0",
     "pytest-html>=4.2.0",
     "pytest-mypy>=1.1.0",

@@ -152,9 +152,20 @@ wheels = [
 ]
 
 [[package]]
-name = "aiollm"
+name = "aiollm-codegen"
+version = "0.1.0"
+source = { git = "https://github.com/aiollm-org/aiollm_codegen?rev=e8702bffd3e623d03f3285fb4727f11892b75772#e8702bffd3e623d03f3285fb4727f11892b75772" }
+dependencies = [
+    { name = "datamodel-code-generator" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+    { name = "ruff" },
+]
+
+[[package]]
+name = "aiollm-core"
 version = "0.14.0"
-source = { git = "https://github.com/aiollm-org/aiollm?rev=fb68c9410b33565b13de54a44f26823728d73c28#fb68c9410b33565b13de54a44f26823728d73c28" }
+source = { git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590#d2f110956bb0168e3e655f83390f5136f56d3590" }
 dependencies = [
     { name = "aiodns" },
     { name = "aiohttp" },
@@ -178,21 +189,10 @@ testing = [
 ]
 
 [[package]]
-name = "aiollm-codegen"
-version = "0.1.0"
-source = { git = "https://github.com/aiollm-org/aiollm_codegen?rev=e8702bffd3e623d03f3285fb4727f11892b75772#e8702bffd3e623d03f3285fb4727f11892b75772" }
-dependencies = [
-    { name = "datamodel-code-generator" },
-    { name = "pydantic" },
-    { name = "pyyaml" },
-    { name = "ruff" },
-]
-
-[[package]]
 name = "aiollm-openai"
 source = { editable = "." }
 dependencies = [
-    { name = "aiollm" },
+    { name = "aiollm-core" },
     { name = "pydantic" },
 ]
 
@@ -211,7 +211,7 @@ dev = [
     { name = "types-pyyaml" },
 ]
 test = [
-    { name = "aiollm", extra = ["testing"] },
+    { name = "aiollm-core", extra = ["testing"] },
     { name = "pytest-cov" },
     { name = "pytest-html" },
     { name = "pytest-mypy" },
@@ -220,7 +220,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aiollm", git = "https://github.com/aiollm-org/aiollm?rev=fb68c9410b33565b13de54a44f26823728d73c28" },
+    { name = "aiollm-core", git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590" },
     { name = "pydantic", specifier = ">=2.14.1" },
 ]
 
@@ -237,7 +237,7 @@ dev = [
     { name = "types-pyyaml", specifier = ">=6.0.12.20261103" },
 ]
 test = [
-    { name = "aiollm", extras = ["testing"], git = "https://github.com/aiollm-org/aiollm?rev=fb68c9410b33565b13de54a44f26823728d73c28" },
+    { name = "aiollm-core", extras = ["testing"], git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-html", specifier = ">=4.2.0" },
     { name = "pytest-mypy", specifier = ">=1.1.0" },
