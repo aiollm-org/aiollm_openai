@@ -1,0 +1,91 @@
+name: upstream
+
+# Every Monday, compare the pinned schema source, OpenAI's OpenAPI file,
+# with the newest commit of openai/openai-openapi that changed
+# openapi.yaml (scripts/refresh_upstream.py). A moved pin becomes one pull
+# request on the branch upstream/refresh, opened or updated with
+# UPSTREAM_PR_TOKEN (an organization secret, a fine-grained token:
+# Contents and Pull requests, read and write), so the pull request runs CI
+# like any other. Its body lists the public names the new types add or
+# remove. Once someone has pushed a commit to the open pull request, the
+# branch is no longer rebuilt: newer sources only get a comment there,
+# until it is merged. Nothing is merged here.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: refresh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.UPSTREAM_PR_TOKEN }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv sync --all-groups --locked
+      - id: check
+        run: >-
+          uv run python scripts/refresh_upstream.py
+          --out "$RUNNER_TEMP/upstream"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - id: tests
+        if: steps.check.outputs.pins == 'true'
+        continue-on-error: true
+        run: uv run pytest -q -p no:cacheprovider
+      - name: open or update the pull request
+        if: steps.check.outputs.pins == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_PR_TOKEN }}
+          TESTS: ${{ steps.tests.outcome }}
+          BODY: ${{ runner.temp }}/upstream/pull-request.md
+        run: |
+          branch="upstream/refresh"
+          bot="41898282+github-actions[bot]@users.noreply.github.com"
+          title="Follow the upstream schema source of OpenAI"
+          git config user.name "github-actions[bot]"
+          git config user.email "$bot"
+          open=false
+          if gh pr view "$branch" --json state -q .state 2>/dev/null | grep -q OPEN; then
+            open=true
+          fi
+          # Commits someone added to the open pull request are kept: the
+          # branch is not rebuilt, the pull request only gets a comment.
+          if [ "$open" = true ]; then
+            git fetch -q origin "$branch"
+            others=$(git log --format=%ae "HEAD..FETCH_HEAD" | grep -vxF "$bot" || true)
+            if [ -n "$others" ]; then
+              {
+                printf 'The weekly check found newer sources, but this branch has commits '
+                printf 'added by hand, so it was not rebuilt. Merge this pull request; '
+                printf 'the next run opens a new one.\n\n'
+                sed -n '/^| Source/,/^$/p' "$BODY"
+              } > "$RUNNER_TEMP/comment.md"
+              gh pr comment "$branch" --body-file "$RUNNER_TEMP/comment.md"
+              exit 0
+            fi
+          fi
+          git switch -C "$branch"
+          git add pyproject.toml uv.lock scripts src tests
+          git commit -q -m "$title"
+          git push -q --force origin "$branch"
+          printf '\nTests in the refresh job: %s.\n' "$TESTS" >> "$BODY"
+          if [ "$open" = true ]; then
+            gh pr edit "$branch" --title "$title" --body-file "$BODY"
+          else
+            draft=()
+            if [ "$TESTS" != success ]; then draft=(--draft); fi
+            gh pr create --base master --head "$branch" --title "$title" \
+              --body-file "$BODY" "${draft[@]}"
+          fi
