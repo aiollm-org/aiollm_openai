@@ -87,11 +87,15 @@ jobs:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.3
       - run: uv build
-      # The wheel brings the core from PyPI: nothing else is installed.
-      - name: Install the wheel into a clean environment and import it
+      # Three clean environments, every package from a wheel (no sdist is
+      # built): this wheel with the core it brings from PyPI; the core
+      # alone, at that version; and both providers on that core, the other
+      # one from PyPI without its dependencies (its own range of the core
+      # may lag behind this branch's).
+      - name: This wheel with the core it brings
         run: |
           uv venv --python 3.13 .wheel-env
-          uv pip install --python .wheel-env dist/*.whl
+          uv pip install --python .wheel-env --only-binary :all: dist/*.whl
           .wheel-env/bin/python - <<'EOF'
           import sys
           from importlib.metadata import version
@@ -108,7 +112,51 @@ jobs:
           print(
               "aiollm-openai",
               aiollm_openai.__version__,
-              "imports from its wheel",
+              "imports from its wheel on aiollm-core",
+              version("aiollm-core"),
+          )
+          EOF
+          .wheel-env/bin/python -c 'from importlib.metadata import version; print(version("aiollm-core"))' > core-version
+      - name: The core alone
+        run: |
+          uv venv --python 3.13 .core-env
+          uv pip install --python .core-env --only-binary :all: "aiollm-core==$(cat core-version)"
+          .core-env/bin/python - <<'EOF'
+          import sys
+
+          import aiollm
+
+          # The core loads no transport and no provider on import.
+          loaded = [
+              name
+              for name in sys.modules
+              if name == "aiohttp" or name.startswith("aiollm_")
+          ]
+          assert loaded == [], loaded
+          print("aiollm-core", aiollm.__version__, "imports alone")
+          EOF
+      - name: Both providers on this core
+        run: |
+          uv venv --python 3.13 .both-env
+          uv pip install --python .both-env --only-binary :all: dist/*.whl
+          uv pip install --python .both-env --only-binary :all: --no-deps aiollm-anthropic
+          .both-env/bin/python - <<'EOF'
+          from importlib.metadata import version
+
+          import aiollm_openai
+          import aiollm_anthropic
+          from aiollm.testing.extension import check_extension_api
+
+          assert check_extension_api("aiollm_openai") == []
+          assert check_extension_api("aiollm_anthropic") == []
+          assert aiollm_openai.api.PROVIDER != aiollm_anthropic.api.PROVIDER
+          print(
+              "aiollm-openai",
+              version("aiollm-openai"),
+              "and aiollm-anthropic",
+              version("aiollm-anthropic"),
+              "on aiollm-core",
+              version("aiollm-core"),
           )
           EOF
 
