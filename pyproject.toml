@@ -44,10 +44,11 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-# The core, pinned to a commit of aiollm-org/aiollm until it is on PyPI
-# as aiollm-core (CONTRIBUTING.md, "A change in the core and here").
+# The core from PyPI, one minor version of it; between two releases of the
+# core a change that needs its unreleased code pins a commit instead
+# (CONTRIBUTING.md, "A change in the core and here").
 dependencies = [
-    "aiollm-core @ git+https://github.com/aiollm-org/aiollm@d2f110956bb0168e3e655f83390f5136f56d3590",
+    "aiollm-core>=0.15,<0.16",
     "pydantic>=2.14.1",
 ]
 
@@ -64,11 +65,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 path = "src/aiollm_openai/__meta__.py"
-
-[tool.hatch.metadata]
-# The git pin of the core above; PyPI refuses it, so the first release
-# waits for aiollm-core on PyPI.
-allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aiollm_openai"]
@@ -90,7 +86,7 @@ dev = [
     "types-pyyaml>=6.0.12.20261103",
 ]
 test = [
-    "aiollm-core[testing] @ git+https://github.com/aiollm-org/aiollm@d2f110956bb0168e3e655f83390f5136f56d3590",
+    "aiollm-core[testing]>=0.15,<0.16",
     "pytest-cov>=7.1.0",
     "pytest-html>=4.2.0",
     "pytest-mypy>=1.1.0",

@@ -87,7 +87,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.3
       - run: uv build
-      # The wheel brings the core it pins: nothing else is installed.
+      # The wheel brings the core from PyPI: nothing else is installed.
       - name: Install the wheel into a clean environment and import it
         run: |
           uv venv --python 3.13 .wheel-env

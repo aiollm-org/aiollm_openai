@@ -164,8 +164,8 @@ dependencies = [
 
 [[package]]
 name = "aiollm-core"
-version = "0.14.0"
-source = { git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590#d2f110956bb0168e3e655f83390f5136f56d3590" }
+version = "0.15.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiodns" },
     { name = "aiohttp" },
@@ -178,6 +178,10 @@ dependencies = [
     { name = "tenacity" },
     { name = "typing-extensions" },
     { name = "yarl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/03/2b/3143adc1433da31316562703571f02e8cffe03a6675cc65fc5a989bee6d6/aiollm_core-0.15.0.tar.gz", hash = "sha256:d6a2a27c610a487b474daae0f9cfbefebc381c514418d3a6172f5232babbaaaf", size = 1095928, upload-time = "2026-11-20T22:04:32.977Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/35/eeb852f00799022b6d8156264962768c95a118c708506acd36940cc68da3/aiollm_core-0.15.0-py3-none-any.whl", hash = "sha256:6a1147b9ef06936a56cf8c90b6cceaaba1cdfcf9e385f2555856dfa45d388285", size = 218569, upload-time = "2026-11-20T22:04:31.315Z" },
 ]
 
 [package.optional-dependencies]
@@ -220,7 +224,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aiollm-core", git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590" },
+    { name = "aiollm-core", specifier = ">=0.15,<0.16" },
     { name = "pydantic", specifier = ">=2.14.1" },
 ]
 
@@ -237,7 +241,7 @@ dev = [
     { name = "types-pyyaml", specifier = ">=6.0.12.20261103" },
 ]
 test = [
-    { name = "aiollm-core", extras = ["testing"], git = "https://github.com/aiollm-org/aiollm?rev=d2f110956bb0168e3e655f83390f5136f56d3590" },
+    { name = "aiollm-core", extras = ["testing"], specifier = ">=0.15,<0.16" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-html", specifier = ">=4.2.0" },
     { name = "pytest-mypy", specifier = ">=1.1.0" },
