@@ -48,12 +48,8 @@ from aiollm.providers.openai.types import (
 from aiollm.providers.openai.types.shared import UnknownVariant
 from aiollm.response.buffered import BufferedResponse
 from aiollm.session.aiohttp import AiohttpSession
-from tests.conftest import (
-    FakeStreamResponse,
-    FakeTransport,
-    Recorder,
-    Reply,
-)
+from aiollm.testing import FakeStreamResponse, FakeTransport, Reply
+from aiollm.testing.aiohttp import Recorder
 
 MESSAGE: dict[str, Any] = {
     "type": "message",
