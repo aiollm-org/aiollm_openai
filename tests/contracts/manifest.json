@@ -3,7 +3,7 @@
   "responses": {
    "openapi": {
     "file": "openapi.yaml",
-    "sha256": "e5666b742f332bc67a43f76f2988f21e81cdc48636c3d25f79f15c7d16ab37b8",
+    "sha256": "b52a3625713c364c027d589d8b102a174d7f492e79babac73d459daf0105ea9c",
     "openapi": "3.1.0",
     "version": "2.3.0"
    },
@@ -30,7 +30,7 @@
    ],
    "openapi": {
     "file": "openapi.yaml",
-    "sha256": "e5666b742f332bc67a43f76f2988f21e81cdc48636c3d25f79f15c7d16ab37b8",
+    "sha256": "b52a3625713c364c027d589d8b102a174d7f492e79babac73d459daf0105ea9c",
     "openapi": "3.1.0",
     "version": "2.3.0"
    },
