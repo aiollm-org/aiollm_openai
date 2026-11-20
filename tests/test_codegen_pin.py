@@ -1,0 +1,27 @@
+"""The generator's input is the file of the contract snapshot."""
+
+from __future__ import annotations
+
+import json
+import runpy
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[3]
+HERE = Path(__file__).parent
+
+
+def test_the_pinned_openapi_file_is_the_snapshot_one() -> None:
+    # The types and the wire contracts come from one OpenAI file, so a
+    # new file changes the pin and the snapshot together.
+    script: dict[str, Any] = runpy.run_path(
+        str(ROOT / "scripts" / "openai" / "generate_types.py")
+    )
+    manifest = json.loads(
+        (HERE / "contracts" / "manifest.json").read_text("utf-8")
+    )
+
+    for endpoint in ("responses", "files"):
+        snapshot = manifest["endpoints"][endpoint]["openapi"]
+        assert script["OPENAI_OPENAPI_SHA256"] == snapshot["sha256"]
+    assert "/openai/openai-openapi/" in script["OPENAI_OPENAPI_URL"]

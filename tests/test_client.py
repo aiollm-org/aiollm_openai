@@ -1,6 +1,6 @@
 """OpenAI: the error resolver.
 
-What every provider client shares is in ``test_provider_clients.py``.
+What every provider client shares is in ``test_client_contract.py``.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from aiollm.providers.openai.resolver import (
 )
 
 
-def test_openai_quota_error_is_not_retried() -> None:
+def test_quota_error_is_not_retried() -> None:
     error = OpenAIErrorResolver().resolve(
         status=429,
         body={"error": {"code": "insufficient_quota", "message": "No"}},
@@ -35,7 +35,7 @@ def test_openai_quota_error_is_not_retried() -> None:
     assert error.provider == OPENAI_PROVIDER
 
 
-def test_openai_failed_response_is_read_without_its_object_field() -> None:
+def test_failed_response_is_read_without_its_object_field() -> None:
     # The same rule as the parser's FAILED_RESPONSE: status alone.
     error = OpenAIErrorResolver().resolve(
         status=200,
@@ -53,7 +53,7 @@ def test_openai_failed_response_is_read_without_its_object_field() -> None:
     assert error.transient is False
 
 
-def test_openai_rate_limit_falls_back_to_the_default() -> None:
+def test_rate_limit_falls_back_to_the_default() -> None:
     error = OpenAIErrorResolver().resolve(
         status=429,
         body={"error": {"code": "rate_limit_exceeded"}},
@@ -75,7 +75,7 @@ def test_openai_rate_limit_falls_back_to_the_default() -> None:
     ],
     ids=["credit", "org-spend", "project-spend", "usage", "type"],
 )
-def test_openai_exhausted_limits_are_quota_errors(
+def test_exhausted_limits_are_quota_errors(
     error: dict[str, str],
 ) -> None:
     resolved = OpenAIErrorResolver().resolve(
@@ -104,7 +104,7 @@ def test_openai_exhausted_limits_are_quota_errors(
     ],
     ids=["overloaded", "server", "type", "unknown"],
 )
-def test_openai_stream_error_is_classified_by_code_or_type(
+def test_stream_error_is_classified_by_code_or_type(
     body: dict[str, Any],
     error_class: type[APIStatusError],
 ) -> None:

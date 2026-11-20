@@ -1,6 +1,6 @@
 """OpenAI generation adapter: shared requests to Responses and back.
 
-The payloads are the reference examples of ``test_openai_responses``.
+The payloads are the reference examples of ``test_responses``.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ from aiollm.types.responses import (
     TextDeltaEvent,
     TokenUsage,
 )
-from tests.providers.test_openai_responses import (
+from tests.providers.openai.test_responses import (
     MESSAGE,
     RESPONSE,
     STREAM,
