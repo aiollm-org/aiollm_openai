@@ -43,12 +43,12 @@ MODULE: Final = "aiollm_openai"
 
 OPENAI_OPENAPI_URL: Final = (
     "https://raw.githubusercontent.com/openai/openai-openapi/"
-    "c898c67d98dfa5b3fb258825ae82183472b8736e/openapi.yaml"
+    "a01e36728330937352bd0ce1375fb2e6f05e40d1/openapi.yaml"
 )
 """OpenAI's OpenAPI file, at the commit of 2026-11-20."""
 
 OPENAI_OPENAPI_SHA256: Final = (
-    "b52a3625713c364c027d589d8b102a174d7f492e79babac73d459daf0105ea9c"
+    "09caa88315c39029a03fcaedc35c1f4e28862b17ae265e234644a8c613e09025"
 )
 """SHA-256 of that file."""
 
