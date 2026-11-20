@@ -13,7 +13,6 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from aiollm.enums import Provider
 from aiollm.http.exceptions.response import APIResponseError
 from aiollm.http.exceptions.status import (
     APIStatusError,
@@ -25,6 +24,7 @@ from aiollm.providers.openai.adapters.conversions import (
     output_text,
     reasoning_summary,
 )
+from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
 from aiollm.providers.openai.methods import CreateResponse, StreamResponse
 from aiollm.providers.openai.resolver import OpenAIErrorResolver
 from aiollm.providers.openai.types import (
@@ -442,7 +442,7 @@ async def test_failed_event_raises_by_its_code() -> None:
     assert len(received) == 1
     assert caught.value.code == "server_error"
     assert caught.value.transient is False
-    assert caught.value.provider is Provider.OPENAI
+    assert caught.value.provider == OPENAI_PROVIDER
     assert "Failed" in str(caught.value)
     raw = caught.value.raw
     assert isinstance(raw, ResponseFailedEvent)
@@ -557,7 +557,7 @@ async def test_error_event_raises_with_its_message() -> None:
 
     assert caught.value.code == "ERR_SOMETHING"
     assert "Something went wrong" in str(caught.value)
-    assert caught.value.provider is Provider.OPENAI
+    assert caught.value.provider == OPENAI_PROVIDER
     assert caught.value.error_type is None
 
 

@@ -342,7 +342,7 @@ def _own(native: NativeOutput | MISSING) -> TypeIs[NativeOutput]:
     Returns:
         Whether it is OpenAI's output, to be sent in place of the turn.
     """
-    return native is not MISSING and native.provider is PROVIDER
+    return native is not MISSING and native.provider == PROVIDER
 
 
 def native_output(response: Response) -> NativeOutput | None:

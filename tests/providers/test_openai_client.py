@@ -9,7 +9,6 @@ from typing import Any
 
 import pytest
 
-from aiollm.enums import Provider
 from aiollm.http.exceptions.status import (
     APIStatusError,
     BadRequestError,
@@ -18,6 +17,7 @@ from aiollm.http.exceptions.status import (
     RateLimitError,
     ServiceUnavailableError,
 )
+from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
 from aiollm.providers.openai.resolver import (
     OpenAIErrorResolver,
 )
@@ -32,7 +32,7 @@ def test_openai_quota_error_is_not_retried() -> None:
 
     assert type(error) is QuotaExceededError
     assert error.transient is False
-    assert error.provider is Provider.OPENAI
+    assert error.provider == OPENAI_PROVIDER
 
 
 def test_openai_failed_response_is_read_without_its_object_field() -> None:

@@ -12,7 +12,7 @@ from typing import Any
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from aiollm.enums import Effort, IncompleteReason, Provider
+from aiollm.enums import Effort, IncompleteReason
 from aiollm.exceptions import RequestValidationError
 from aiollm.http.exceptions.response import APIResponseError
 from aiollm.http.exceptions.status import (
@@ -22,6 +22,7 @@ from aiollm.http.exceptions.status import (
 from aiollm.providers.openai import OpenAIClient
 from aiollm.providers.openai.adapters import OpenAIGenerationAdapter
 from aiollm.providers.openai.adapters.conversions import output_text
+from aiollm.providers.openai.api import PROVIDER as OPENAI_PROVIDER
 from aiollm.providers.openai.client import session_factory
 from aiollm.providers.openai.methods import CreateResponse, StreamResponse
 from aiollm.providers.openai.types import Response, ResponseStreamEvent
@@ -148,7 +149,7 @@ def test_limits_of_openai_are_checked_before_sending(
         adapter.to_stream_method(request)
 
     error = caught.value
-    assert error.provider is Provider.OPENAI
+    assert error.provider == OPENAI_PROVIDER
     assert error.field == field
     assert isinstance(error, ValueError)
     assert isinstance(error.__cause__, ValidationError)
@@ -183,7 +184,7 @@ def test_completed_response_is_converted() -> None:
     converted = adapter.to_response(raw, REQUEST)
 
     assert converted.id == RESPONSE["id"]
-    assert converted.provider is Provider.OPENAI
+    assert converted.provider == OPENAI_PROVIDER
     assert converted.model == "gpt-6-astra"
     assert converted.text == TEXT
     assert converted.usage == TokenUsage(

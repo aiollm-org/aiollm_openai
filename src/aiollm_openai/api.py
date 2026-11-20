@@ -7,7 +7,7 @@ from typing import Final
 from aiollm.enums import Provider
 from aiollm.http.api import BaseAPI
 
-PROVIDER: Final = Provider.OPENAI
+PROVIDER: Final = Provider("openai")
 """The provider of this package; its client, resolver and adapter use it."""
 
 
