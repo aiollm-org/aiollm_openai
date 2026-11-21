@@ -12,6 +12,25 @@ earlier changes are in [aiollm's changelog](https://github.com/aiollm-org/aiollm
 
 <!-- towncrier release notes start -->
 
+## [0.17.0] - 2026-11-21
+
+### Added
+
+- Files of the code interpreter: `response.files` (and `CompletedEvent.files`)
+  lists the files of a container that the answer cites
+  (`container_file_citation`), once each, as `ProducedFile`s with their
+  `filename` and `container_id`; `client.files.download(file)` streams one from
+  its container with the new method `RetrieveContainerFileContent` (`GET
+  /containers/{container_id}/files/{file_id}/content`). OpenAI names a file
+  only when the text refers to it. `CodeExecution(files=[...])` sends stored
+  files as the automatic container's `file_ids`.
+
+### Changed
+
+- **Breaking:** needs `aiollm-core` 0.17:
+  `OpenAIFilesAdapter.to_download_method` takes the whole `ProviderFile`, as
+  the core's `IFilesAdapter` now does.
+
 ## [0.16.0] - 2026-11-21
 
 ### Added
@@ -53,6 +72,7 @@ earlier changes are in [aiollm's changelog](https://github.com/aiollm-org/aiollm
   (it was `aiollm`), from PyPI: `aiollm-core>=0.15,<0.16`. The module is
   still `aiollm`.
 
-[Unreleased]: https://github.com/aiollm-org/aiollm_openai/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/aiollm-org/aiollm_openai/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/aiollm-org/aiollm_openai/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/aiollm-org/aiollm_openai/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/aiollm-org/aiollm_openai/releases/tag/v0.15.0

@@ -16,7 +16,7 @@ uv sync --all-groups
 uv run pre-commit install
 ```
 
-The core, [aiollm](https://github.com/aiollm-org/aiollm), comes from PyPI as `aiollm-core`, one minor version of it (`>=0.16,<0.17`), with its test kit (`aiollm-core[testing]`).
+The core, [aiollm](https://github.com/aiollm-org/aiollm), comes from PyPI as `aiollm-core`, one minor version of it (`>=0.17,<0.18`), with its test kit (`aiollm-core[testing]`).
 
 ## A change in the core and here
 
