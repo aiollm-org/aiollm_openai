@@ -129,6 +129,21 @@
     }
    }
   },
+  "RetrieveContainerFileContentParams": {
+   "type": "object",
+   "properties": {
+    "container_id": {
+     "type": "string"
+    },
+    "file_id": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "container_id",
+    "file_id"
+   ]
+  },
   "RetrieveFileParams": {
    "type": "object",
    "properties": {

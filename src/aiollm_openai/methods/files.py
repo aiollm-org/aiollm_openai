@@ -1,10 +1,13 @@
-"""Methods of OpenAI's Files API."""
+"""Methods of OpenAI's Files API, and the download of a container's file."""
 
 from __future__ import annotations
 
 from aiollm.enums import BodyFormat, ResponseFormat
 from aiollm.methods.base import BaseAPIMethod, BaseStreamMethod
 
+from aiollm_openai.methods.params.containers import (
+    RetrieveContainerFileContentParams,
+)
 from aiollm_openai.methods.params.files import (
     CreateFileParams,
     DeleteFileParams,
@@ -105,6 +108,31 @@ class DownloadFile(DownloadFileParams, BaseStreamMethod[bytes]):
     """
 
     __request_path__ = "/files/{file_id}/content"
+    __request_method__ = "GET"
+    __response_format__ = ResponseFormat.BYTES
+    __retryable__ = True
+
+
+class RetrieveContainerFileContent(
+    RetrieveContainerFileContentParams, BaseStreamMethod[bytes]
+):
+    """Stream the content of a file in a code interpreter's container.
+
+    The files the code writes stay in its container, not in the Files
+    API, until the container expires; ``client.files.download`` sends
+    this method for a ``ProducedFile`` with a ``container_id``. Only
+    opening the download is retried. OpenAI answers 404 once the
+    container has expired.
+
+    Example:
+        >>> method = RetrieveContainerFileContent(
+        ...     container_id="cntr_123", file_id="cfile_456"
+        ... )
+        >>> async with client.stream(method) as content:
+        ...     await content.save(Path("chart.png"))
+    """
+
+    __request_path__ = "/containers/{container_id}/files/{file_id}/content"
     __request_method__ = "GET"
     __response_format__ = ResponseFormat.BYTES
     __retryable__ = True

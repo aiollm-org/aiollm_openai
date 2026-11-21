@@ -66,5 +66,19 @@
    "application/octet-stream"
   ],
   "schema": null
+ },
+ "RetrieveContainerFileContent": {
+  "method": "GET",
+  "path": "/containers/{container_id}/files/{file_id}/content",
+  "path_parameters": [
+   "container_id",
+   "file_id"
+  ],
+  "query": [],
+  "body": [],
+  "response": [
+   "*/*"
+  ],
+  "schema": null
  }
 }

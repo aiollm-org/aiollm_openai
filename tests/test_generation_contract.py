@@ -11,10 +11,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import pytest
-
 from aiollm.testing.contract.generation import (
     CALLS,
+    CODE_FILE_ID,
+    CODE_ID,
+    PRODUCED_ID,
+    PRODUCED_NAME,
     SCHEMA,
     SEARCH_ID,
     SEARCH_QUERIES,
@@ -183,6 +185,81 @@ def openai_searched_stream() -> list[dict[str, Any]]:
     return events
 
 
+CODE_ITEM: dict[str, Any] = {
+    "type": "code_interpreter_call",
+    "id": CODE_ID,
+    "status": "completed",
+    "container_id": "cntr_1",
+    "code": "plot(sales)",
+    "outputs": None,
+}
+"""The item of the code the model runs."""
+
+CHART_TEXT: str = "Here is the chart."
+"""The answer after it."""
+
+CHART_MESSAGE: dict[str, Any] = openai.MESSAGE | {
+    "content": [
+        {
+            "type": "output_text",
+            "text": CHART_TEXT,
+            "annotations": [
+                {
+                    "type": "container_file_citation",
+                    "container_id": "cntr_1",
+                    "file_id": PRODUCED_ID,
+                    "filename": PRODUCED_NAME,
+                    "start_index": 12,
+                    "end_index": 17,
+                },
+                {
+                    "type": "container_file_citation",
+                    "container_id": "cntr_1",
+                    "file_id": PRODUCED_ID,
+                    "filename": PRODUCED_NAME,
+                    "start_index": 0,
+                    "end_index": 4,
+                },
+            ],
+            "logprobs": [],
+        }
+    ]
+}
+"""The answer, citing the chart the code wrote twice."""
+
+
+def openai_coded_stream() -> list[dict[str, Any]]:
+    """An OpenAI stream of one code run and the answer citing its file."""
+    in_progress = CODE_ITEM | {"status": "in_progress", "code": None}
+    events: list[dict[str, Any]] = [
+        openai.state("response.created", 0, status="in_progress", usage=None),
+        {
+            "type": "response.output_item.added",
+            "output_index": 0,
+            "item": in_progress,
+        },
+        {
+            "type": "response.output_item.done",
+            "output_index": 0,
+            "item": CODE_ITEM,
+        },
+        {
+            "type": "response.output_text.delta",
+            "item_id": openai.ITEM_ID,
+            "output_index": 1,
+            "content_index": 0,
+            "delta": CHART_TEXT,
+            "logprobs": [],
+        },
+        openai.state(
+            "response.completed", 0, output=[CODE_ITEM, CHART_MESSAGE]
+        ),
+    ]
+    for number, event in enumerate(events):
+        event["sequence_number"] = number
+    return events
+
+
 OPENAI_BUILTIN = BuiltinCase(
     tools={
         "tools": [
@@ -212,10 +289,19 @@ OPENAI_BUILTIN = BuiltinCase(
     searched=openai_searched(SEARCH_ITEM, CITED_MESSAGE),
     searched_stream=openai_searched_stream(),
     failed=openai_searched(SEARCH_ITEM | {"status": "failed"}, openai.MESSAGE),
-    # OpenAI never pauses a turn: ``test_a_paused_generation_...`` is
-    # skipped below, and these two are never read.
-    paused=openai_searched(SEARCH_ITEM),
-    continued=[],
+    coded=openai_searched(CODE_ITEM, CHART_MESSAGE),
+    coded_stream=openai_coded_stream(),
+    produced={"filename": PRODUCED_NAME, "container_id": "cntr_1"},
+    code_files={
+        "tools": [
+            {
+                "type": "code_interpreter",
+                "container": {"type": "auto", "file_ids": [CODE_FILE_ID]},
+            }
+        ]
+    },
+    # OpenAI never pauses a turn: no ``paused``, so the scenario that
+    # continues one is skipped.
 )
 
 OPENAI = GenerationCase(
@@ -415,9 +501,3 @@ OPENAI = GenerationCase(
 
 class TestOpenAIGeneration(GenerationContract):
     case = OPENAI
-
-    async def test_a_paused_generation_continues_with_its_native_output(
-        self, *args: Any, **kwargs: Any
-    ) -> None:
-        """OpenAI has no ``pause_turn``: nothing to continue."""
-        pytest.skip("OpenAI never pauses a turn")

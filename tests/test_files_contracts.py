@@ -144,7 +144,7 @@ def test_methods_read_what_upstream_returns(case: FilesCase) -> None:
         method = method_of(case, operation)
         request = method.model_construct()
 
-        if shape["response"] == ["application/octet-stream"]:
+        if shape["response"] in (["application/octet-stream"], ["*/*"]):
             assert issubclass(method, BaseStreamMethod), operation
             assert request.response_format is ResponseFormat.BYTES
             continue
