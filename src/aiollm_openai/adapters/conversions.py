@@ -10,7 +10,13 @@ from pydantic import MISSING
 
 from aiollm.adapters.base import BaseConversion
 from aiollm.adapters.stop import Stop
-from aiollm.enums import IncompleteReason, Role
+from aiollm.enums import (
+    CitationKind,
+    IncompleteReason,
+    Role,
+    ServerToolKind,
+    ServerToolStatus,
+)
 from aiollm.http.exceptions.response import APIResponseError
 from aiollm.types.requests.content import (
     ContentPart,
@@ -25,6 +31,7 @@ from aiollm.types.requests.generation import (
     ToolCallTurn,
     Turn,
 )
+from aiollm.types.responses.builtin import Citation, ServerToolCall
 from aiollm.types.responses.generation import TokenUsage
 
 from aiollm_openai.api import PROVIDER
@@ -54,7 +61,10 @@ class InputConversion(
     """Converts the shared ``input`` into OpenAI's ``input``.
 
     A text is sent as it is. In a list, a text turn becomes an
-    ``EasyInputMessage`` (``role``, ``content``), a turn of calls its
+    ``EasyInputMessage`` (``role``, ``content``), an ``assistant`` turn
+    with OpenAI's own output (``native``: a response that used built-in
+    tools, whose search calls and reasoning items OpenAI needs back)
+    those output items, a turn of calls its
     OpenAI output items when it has them (``native``, reasoning items
     with it), else an ``assistant`` message with its text and a
     ``function_call`` per call, and a tool result a
@@ -77,6 +87,10 @@ class InputConversion(
         items: list[dict[str, Any]] = []
         for item in source:
             match item:
+                case Turn(native=NativeOutput() as native) if (
+                    item.role is Role.ASSISTANT and native.provider == PROVIDER
+                ):
+                    items += [dict(output) for output in native.items]
                 case Turn():
                     items.append(
                         {
@@ -347,6 +361,21 @@ def _own(native: NativeOutput | MISSING) -> TypeIs[NativeOutput]:
     return native is not MISSING and native.provider == PROVIDER
 
 
+def output_items(response: Response) -> list[dict[str, Any]]:
+    """Dump a response's output items as OpenAI sent them.
+
+    Args:
+        response: A response.
+
+    Returns:
+        Each output item with only the fields OpenAI sent.
+    """
+    return [
+        item.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        for item in response.output
+    ]
+
+
 def native_output(response: Response) -> NativeOutput | None:
     """Keep a response's output as OpenAI's next request takes it.
 
@@ -356,14 +385,220 @@ def native_output(response: Response) -> NativeOutput | None:
     Returns:
         Its output items with only the fields OpenAI sent, which are
         valid input items (reasoning items with their ``id`` or
-        ``encrypted_content``, function calls, messages); ``None``
-        without output.
+        ``encrypted_content``, function calls, the calls of built-in
+        tools, messages with their annotations); ``None`` without
+        output.
     """
-    items = [
-        item.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        for item in response.output
-    ]
+    items = output_items(response)
     return NativeOutput(provider=PROVIDER, items=items) if items else None
+
+
+SERVER_TOOL_KINDS: Final[Mapping[str, ServerToolKind]] = {
+    "web_search_call": ServerToolKind.WEB_SEARCH,
+    "file_search_call": ServerToolKind.FILE_SEARCH,
+    "code_interpreter_call": ServerToolKind.CODE_EXECUTION,
+    "image_generation_call": ServerToolKind.IMAGE_GENERATION,
+    "mcp_call": ServerToolKind.MCP,
+}
+"""Shared kind of each output item that is a call OpenAI ran itself.
+
+The other tool calls of the output (computer, shell, patch, custom, local
+shell) are for the client to run.
+"""
+
+SERVER_TOOL_STATUSES: Final[Mapping[str, ServerToolStatus]] = {
+    "completed": ServerToolStatus.COMPLETED,
+    "failed": ServerToolStatus.FAILED,
+    "incomplete": ServerToolStatus.INCOMPLETE,
+}
+"""Shared status of each final ``status`` of a call item.
+
+A call that is still ``in_progress``, ``searching``, ``interpreting`` or
+``generating`` in a finished response never got its result, so it is
+``INCOMPLETE``.
+"""
+
+FAILED: Final = "failed"
+"""What a failed call says when OpenAI tells no more."""
+
+
+def server_tool_call(item: Mapping[str, Any]) -> ServerToolCall | None:
+    """Turn an output item of a built-in tool call into a shared call.
+
+    Args:
+        item: An output item, as OpenAI sent it.
+
+    Returns:
+        The call: a search's queries, a code interpreter's code, the
+        status (``COMPLETED``, ``FAILED`` with the item's error, or
+        ``INCOMPLETE`` for any other), the item in ``raw``; ``None`` for
+        an item that is no call OpenAI ran.
+    """
+    kind = SERVER_TOOL_KINDS.get(str(item.get("type")))
+    if kind is None:
+        return None
+    status = SERVER_TOOL_STATUSES.get(
+        str(item.get("status")), ServerToolStatus.INCOMPLETE
+    )
+    code = item.get("code")
+    return ServerToolCall(
+        id=item["id"],
+        kind=kind,
+        status=status,
+        queries=_queries(item),
+        code=code if isinstance(code, str) else None,
+        error=_error(item) if status is ServerToolStatus.FAILED else None,
+        raw=[dict(item)],
+    )
+
+
+def _queries(item: Mapping[str, Any]) -> list[str]:
+    """Collect what a search call looked for.
+
+    Args:
+        item: A ``web_search_call`` or ``file_search_call`` item.
+
+    Returns:
+        The ``query`` and ``queries`` of a web search's ``search``
+        action, or the ``queries`` of a file search, without repeats;
+        empty for any other item.
+    """
+    action = item.get("action")
+    found = [
+        *(item.get("queries") or []),
+        *(
+            [action.get("query"), *(action.get("queries") or [])]
+            if isinstance(action, Mapping)
+            else []
+        ),
+    ]
+    return list(dict.fromkeys(q for q in found if isinstance(q, str)))
+
+
+def _error(item: Mapping[str, Any]) -> str:
+    """Tell what went wrong in a failed call item.
+
+    Args:
+        item: A failed call item.
+
+    Returns:
+        The item's ``error`` (a text, or the ``message``, ``code`` or
+        ``type`` of an object, whichever it has first), else
+        ``"failed"``.
+    """
+    error = item.get("error")
+    if isinstance(error, Mapping):
+        detail = error.get("message") or error.get("code") or error.get("type")
+        error = None if detail is None else str(detail)
+    return error if isinstance(error, str) and error else FAILED
+
+
+def server_tool_calls(
+    output: Sequence[Mapping[str, Any]],
+) -> list[ServerToolCall]:
+    """Collect the built-in tool calls of output items.
+
+    Args:
+        output: The output items of a response, as OpenAI sent them.
+
+    Returns:
+        A call per item that is one, in output order.
+    """
+    calls = (server_tool_call(item) for item in output)
+    return [call for call in calls if call is not None]
+
+
+def output_citations(output: Sequence[Mapping[str, Any]]) -> list[Citation]:
+    """Collect the citations of the output text.
+
+    OpenAI gives each annotation's position in the ``output_text`` part
+    it sits in; here it is moved to the joined text of the response.
+    A ``url_citation`` is a ``URL``, a ``file_citation`` a ``FILE`` (OpenAI
+    gives no span for it, only the file's place in a list) and a
+    ``container_file_citation`` a ``CONTAINER_FILE``; a ``file_path``
+    stays in ``raw`` and ``native``.
+
+    Args:
+        output: The output items of a response, as OpenAI sent them.
+
+    Returns:
+        The citations, in order.
+    """
+    citations: list[Citation] = []
+    offset = 0
+    for item in output:
+        if item.get("type") != "message":
+            continue
+        for part in item.get("content") or []:
+            if part.get("type") != "output_text":
+                continue
+            for annotation in part.get("annotations") or []:
+                citation = _citation(annotation, offset)
+                if citation is not None:
+                    citations.append(citation)
+            offset += len(str(part.get("text", "")))
+    return citations
+
+
+def response_server_calls(response: Response) -> list[ServerToolCall]:
+    """Collect the built-in tool calls of a response.
+
+    Args:
+        response: A response.
+
+    Returns:
+        Its calls, as ``server_tool_calls`` gives them; empty without.
+    """
+    return server_tool_calls(output_items(response))
+
+
+def response_citations(response: Response) -> list[Citation]:
+    """Collect the citations of a response.
+
+    Args:
+        response: A response.
+
+    Returns:
+        Its citations, as ``output_citations`` gives them; empty without.
+    """
+    return output_citations(output_items(response))
+
+
+def _citation(annotation: Mapping[str, Any], offset: int) -> Citation | None:
+    """Turn an annotation of an output text into a shared citation.
+
+    Args:
+        annotation: The annotation as OpenAI sent it.
+        offset: Where its text part starts in the joined text.
+
+    Returns:
+        The citation, or ``None`` for an annotation that is no source.
+    """
+    kind = annotation.get("type")
+    if kind == "url_citation":
+        return Citation(
+            kind=CitationKind.URL,
+            url=annotation.get("url"),
+            title=annotation.get("title"),
+            start_index=annotation["start_index"] + offset,
+            end_index=annotation["end_index"] + offset,
+        )
+    if kind == "file_citation":
+        return Citation(
+            kind=CitationKind.FILE,
+            file_id=annotation.get("file_id"),
+            filename=annotation.get("filename"),
+        )
+    if kind == "container_file_citation":
+        return Citation(
+            kind=CitationKind.CONTAINER_FILE,
+            container_id=annotation.get("container_id"),
+            file_id=annotation.get("file_id"),
+            filename=annotation.get("filename"),
+            start_index=annotation["start_index"] + offset,
+            end_index=annotation["end_index"] + offset,
+        )
+    return None
 
 
 def reasoning_summary(response: Response) -> str | None:

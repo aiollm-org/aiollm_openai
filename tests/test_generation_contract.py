@@ -11,9 +11,14 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import pytest
+
 from aiollm.testing.contract.generation import (
     CALLS,
     SCHEMA,
+    SEARCH_ID,
+    SEARCH_QUERIES,
+    BuiltinCase,
     GenerationCase,
     GenerationContract,
 )
@@ -92,6 +97,126 @@ def openai_called_stream() -> list[dict[str, Any]]:
         event["sequence_number"] = number
     return events
 
+
+SEARCH_ITEM: dict[str, Any] = {
+    "type": "web_search_call",
+    "id": SEARCH_ID,
+    "status": "completed",
+    "action": {
+        "type": "search",
+        "query": SEARCH_QUERIES[0],
+        "sources": [{"type": "url", "url": "https://example.com/paris"}],
+    },
+}
+"""The item of the search the model makes."""
+
+CITED_MESSAGE: dict[str, Any] = openai.MESSAGE | {
+    "content": [
+        openai.MESSAGE["content"][0]
+        | {
+            "annotations": [
+                {
+                    "type": "url_citation",
+                    "url": "https://example.com/paris",
+                    "title": "Paris weather",
+                    "start_index": 0,
+                    "end_index": 9,
+                }
+            ]
+        }
+    ]
+}
+"""The answer, with its citation."""
+
+
+def openai_searched(*items: dict[str, Any]) -> dict[str, Any]:
+    """An OpenAI response of the given output items."""
+    return openai.RESPONSE | {"output": list(items)}
+
+
+def openai_searched_stream() -> list[dict[str, Any]]:
+    """An OpenAI stream of one web search and the answer it leads to."""
+    in_progress = {
+        key: value for key, value in SEARCH_ITEM.items() if key != "action"
+    } | {"status": "in_progress"}
+    events: list[dict[str, Any]] = [
+        openai.state("response.created", 0, status="in_progress", usage=None),
+        {
+            "type": "response.output_item.added",
+            "output_index": 0,
+            "item": in_progress,
+        },
+        {
+            "type": "response.web_search_call.in_progress",
+            "item_id": SEARCH_ID,
+            "output_index": 0,
+        },
+        {
+            "type": "response.web_search_call.searching",
+            "item_id": SEARCH_ID,
+            "output_index": 0,
+        },
+        {
+            "type": "response.web_search_call.completed",
+            "item_id": SEARCH_ID,
+            "output_index": 0,
+        },
+        {
+            "type": "response.output_item.done",
+            "output_index": 0,
+            "item": SEARCH_ITEM,
+        },
+        {
+            "type": "response.output_text.delta",
+            "item_id": openai.ITEM_ID,
+            "output_index": 1,
+            "content_index": 0,
+            "delta": "The image",
+            "logprobs": [],
+        },
+        openai.state(
+            "response.completed", 0, output=[SEARCH_ITEM, CITED_MESSAGE]
+        ),
+    ]
+    for number, event in enumerate(events):
+        event["sequence_number"] = number
+    return events
+
+
+OPENAI_BUILTIN = BuiltinCase(
+    tools={
+        "tools": [
+            {
+                "type": "web_search",
+                "filters": {"allowed_domains": ["example.com"]},
+                "user_location": {
+                    "type": "approximate",
+                    "country": "FR",
+                    "city": "Paris",
+                },
+            },
+            {"type": "code_interpreter", "container": {"type": "auto"}},
+        ]
+    },
+    mixed={
+        "tools": [
+            {
+                "type": "function",
+                "name": "get_time",
+                "parameters": {"type": "object", "properties": {}},
+                "strict": None,
+            },
+            {"type": "web_search"},
+        ]
+    },
+    searched=openai_searched(SEARCH_ITEM, CITED_MESSAGE),
+    searched_stream=openai_searched_stream(),
+    failed=openai_searched(SEARCH_ITEM | {"status": "failed"}, openai.MESSAGE),
+    # OpenAI never pauses a turn: ``test_a_paused_generation_...`` is
+    # skipped below, and these two are never read.
+    paused=openai_searched(SEARCH_ITEM),
+    continued=[],
+)
 
 OPENAI = GenerationCase(
     provider=OPENAI_PROVIDER,
@@ -187,6 +312,7 @@ OPENAI = GenerationCase(
     },
     forced={"tool_choice": {"type": "function", "name": "get_time"}},
     only_parallel={"parallel_tool_calls": True},
+    builtin=OPENAI_BUILTIN,
     called=openai_called(),
     called_stream=openai_called_stream(),
     cut_off={
@@ -289,3 +415,9 @@ OPENAI = GenerationCase(
 
 class TestOpenAIGeneration(GenerationContract):
     case = OPENAI
+
+    async def test_a_paused_generation_continues_with_its_native_output(
+        self, *args: Any, **kwargs: Any
+    ) -> None:
+        """OpenAI has no ``pause_turn``: nothing to continue."""
+        pytest.skip("OpenAI never pauses a turn")
