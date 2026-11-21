@@ -71,6 +71,7 @@ OPENAI = FilesCase(
             "detail": "auto",
         },
     ],
+    container_download="/v1/containers/cntr_1/files/cfile_1/content",
 )
 
 

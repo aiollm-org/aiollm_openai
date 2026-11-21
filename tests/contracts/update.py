@@ -108,6 +108,7 @@ OPENAPI_ENDPOINTS: Final = (
             "retrieveFile",
             "deleteFile",
             "downloadFile",
+            "RetrieveContainerFileContent",
         ),
         variable="OPENAI_OPENAPI",
     ),

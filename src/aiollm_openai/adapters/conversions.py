@@ -31,7 +31,11 @@ from aiollm.types.requests.generation import (
     ToolCallTurn,
     Turn,
 )
-from aiollm.types.responses.builtin import Citation, ServerToolCall
+from aiollm.types.responses.builtin import (
+    Citation,
+    ProducedFile,
+    ServerToolCall,
+)
 from aiollm.types.responses.generation import TokenUsage
 
 from aiollm_openai.api import PROVIDER
@@ -538,6 +542,53 @@ def output_citations(output: Sequence[Mapping[str, Any]]) -> list[Citation]:
                     citations.append(citation)
             offset += len(str(part.get("text", "")))
     return citations
+
+
+def output_files(output: Sequence[Mapping[str, Any]]) -> list[ProducedFile]:
+    """Collect the files of a container that the output text names.
+
+    The code interpreter keeps the files its code writes in its
+    container; OpenAI names one when the text refers to it, with a
+    ``container_file_citation``. Each file comes once, however often the
+    text cites it. OpenAI does not say which call wrote it.
+
+    Args:
+        output: The output items of a response, as OpenAI sent them.
+
+    Returns:
+        The files, in the order the text first cites them.
+    """
+    files: dict[tuple[str, str], ProducedFile] = {}
+    for citation in output_citations(output):
+        if (
+            citation.kind is not CitationKind.CONTAINER_FILE
+            or citation.container_id is None
+            or citation.file_id is None
+        ):
+            continue
+        key = (citation.container_id, citation.file_id)
+        files.setdefault(
+            key,
+            ProducedFile(
+                provider=PROVIDER,
+                id=citation.file_id,
+                filename=citation.filename,
+                container_id=citation.container_id,
+            ),
+        )
+    return list(files.values())
+
+
+def response_files(response: Response) -> list[ProducedFile]:
+    """Collect the files of a container that a response names.
+
+    Args:
+        response: A response.
+
+    Returns:
+        Its files, as ``output_files`` gives them; empty without.
+    """
+    return output_files(output_items(response))
 
 
 def response_server_calls(response: Response) -> list[ServerToolCall]:

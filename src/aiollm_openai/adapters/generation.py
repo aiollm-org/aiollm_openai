@@ -53,6 +53,7 @@ from aiollm_openai.adapters.conversions import (
     output_text,
     reasoning_summary,
     response_citations,
+    response_files,
     response_server_calls,
     server_tool_call,
     tool_calls,
@@ -206,8 +207,9 @@ class OpenAIGenerationAdapter(
 
         Returns:
             The generated text with its token counts, the calls of the
-            built-in tools OpenAI ran (``server_tool_calls``) and the
-            sources its text cites (``citations``); an incomplete
+            built-in tools OpenAI ran (``server_tool_calls``), the
+            sources its text cites (``citations``) and the files of a
+            container it names (``files``); an incomplete
             response keeps its text and gets ``incomplete_reason``, and
             a refusal gets ``IncompleteReason.REFUSAL`` and ``refusal``.
 
@@ -230,6 +232,7 @@ class OpenAIGenerationAdapter(
             tool_calls=tool_calls(raw),
             server_tool_calls=response_server_calls(raw),
             citations=response_citations(raw),
+            files=response_files(raw),
             native=native_output(raw),
             raw=raw,
         )
@@ -352,6 +355,7 @@ class OpenAIGenerationAdapter(
                     tool_calls=tool_calls(response),
                     server_tool_calls=response_server_calls(response),
                     citations=response_citations(response),
+                    files=response_files(response),
                     native=native_output(response),
                     raw=event,
                 )
@@ -485,7 +489,8 @@ def _builtin_tool(tool: BuiltinTool) -> dict[str, Any]:
         ``WebSearch`` as a ``web_search`` tool with its domains as
         ``filters.allowed_domains`` and its location as an
         ``approximate`` one, ``CodeExecution`` as a ``code_interpreter``
-        tool in an ``auto`` container, and a ``ProviderTool`` (the only
+        tool in an ``auto`` container with the ids of its ``files`` as
+        the container's ``file_ids``, and a ``ProviderTool`` (the only
         other kind) as its own definition.
     """
     match tool:
@@ -507,7 +512,10 @@ def _builtin_tool(tool: BuiltinTool) -> dict[str, Any]:
                 }
             return search
         case CodeExecution():
-            return {"type": "code_interpreter", "container": {"type": "auto"}}
+            container: dict[str, Any] = {"type": "auto"}
+            if tool.files is not MISSING:
+                container["file_ids"] = [file.id for file in tool.files]
+            return {"type": "code_interpreter", "container": container}
         case _:
             return copy.deepcopy(dict(tool.definition))
 

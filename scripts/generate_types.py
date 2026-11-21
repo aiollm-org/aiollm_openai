@@ -59,6 +59,7 @@ OPENAI_OPERATIONS: Final = (
     "retrieveFile",
     "deleteFile",
     "downloadFile",
+    "RetrieveContainerFileContent",
 )
 """The operations of OpenAI's file the library implements."""
 

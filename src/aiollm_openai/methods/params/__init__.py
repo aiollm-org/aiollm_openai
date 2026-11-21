@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from .containers import (
+    RetrieveContainerFileContentParams,
+)
 from .files import (
     ApplyPatchCreateFileOperationParam,
     ApplyPatchDeleteFileOperationParam,
@@ -429,6 +432,7 @@ __all__ = [
     "ResponseProperties",
     "ResponseStreamOptions",
     "ResponseTextParam",
+    "RetrieveContainerFileContentParams",
     "RetrieveFileParams",
     "ScreenshotParam",
     "ScrollParam",

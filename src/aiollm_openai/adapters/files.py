@@ -12,6 +12,7 @@ from pydantic import MISSING
 from aiollm.adapters.base import BaseFilesAdapter
 from aiollm.adapters.validation import (
     checked_options,
+    container_of,
     merge_options,
     request_errors,
 )
@@ -25,6 +26,7 @@ from aiollm_openai.methods.files import (
     DeleteFile,
     DownloadFile,
     ListFiles,
+    RetrieveContainerFileContent,
     RetrieveFile,
 )
 from aiollm_openai.types.files import ListFilesResponse, OpenAIFile
@@ -180,16 +182,24 @@ class OpenAIFilesAdapter(BaseFilesAdapter[OpenAIFile, ListFilesResponse]):
         """
         return DeleteFile(file_id=file_id)
 
-    def to_download_method(self, file_id: str) -> DownloadFile:
+    def to_download_method(
+        self, file: ProviderFile
+    ) -> DownloadFile | RetrieveContainerFileContent:
         """Build the method that streams a file's content.
 
         Args:
-            file_id: OpenAI's id of the file.
+            file: The file: a stored one, or a ``ProducedFile`` of a code
+                interpreter's container.
 
         Returns:
+            ``RetrieveContainerFileContent`` for a file of a container, else
             ``DownloadFile``; OpenAI refuses a ``user_data`` file.
         """
-        return DownloadFile(file_id=file_id)
+        if (container := container_of(file)) is not None:
+            return RetrieveContainerFileContent(
+                container_id=container, file_id=file.id
+            )
+        return DownloadFile(file_id=file.id)
 
     def to_stored_file(self, raw: OpenAIFile) -> StoredFile[OpenAIFile]:
         """Convert OpenAI's file into the shared metadata.

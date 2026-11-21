@@ -20,6 +20,7 @@
     "DownloadFile",
     "ListFiles",
     "Metadata",
+    "RetrieveContainerFileContent",
     "RetrieveFile",
     "StreamResponse"
   ],
@@ -206,6 +207,7 @@
     "ResponseProperties",
     "ResponseStreamOptions",
     "ResponseTextParam",
+    "RetrieveContainerFileContentParams",
     "RetrieveFileParams",
     "ScreenshotParam",
     "ScrollParam",

@@ -1,4 +1,4 @@
-"""OpenAI's methods of the Responses and Files APIs.
+"""OpenAI's methods of the Responses and Files APIs and of containers.
 
 Their request fields are the generated mixins of ``methods.params``.
 """
@@ -10,6 +10,7 @@ from aiollm_openai.methods.files import (
     DeleteFile,
     DownloadFile,
     ListFiles,
+    RetrieveContainerFileContent,
     RetrieveFile,
 )
 from aiollm_openai.methods.responses import (
@@ -25,6 +26,7 @@ __all__ = [
     "DownloadFile",
     "ListFiles",
     "Metadata",
+    "RetrieveContainerFileContent",
     "RetrieveFile",
     "StreamResponse",
 ]
