@@ -10,14 +10,20 @@ from pydantic import MISSING
 
 from aiollm.adapters.base import BaseCompositeAdapter
 from aiollm.adapters.validation import (
+    check_builtin_tools,
     check_conversation,
     check_files,
     checked_options,
     merge_options,
     request_errors,
 )
-from aiollm.enums import ToolChoice
+from aiollm.enums import ServerToolPhase, ServerToolStatus, ToolChoice
 from aiollm.http.exceptions.response import APIResponseError
+from aiollm.types.requests.builtin import (
+    BuiltinTool,
+    CodeExecution,
+    WebSearch,
+)
 from aiollm.types.requests.generation import (
     ForcedTool,
     GenerationRequest,
@@ -30,6 +36,7 @@ from aiollm.types.responses.events import (
     GenerationEvent,
     OtherEvent,
     ReasoningDeltaEvent,
+    ServerToolCallEvent,
     TextDeltaEvent,
     ToolCallDeltaEvent,
     ToolCallDoneEvent,
@@ -45,6 +52,9 @@ from aiollm_openai.adapters.conversions import (
     native_output,
     output_text,
     reasoning_summary,
+    response_citations,
+    response_server_calls,
+    server_tool_call,
     tool_calls,
 )
 from aiollm_openai.api import PROVIDER
@@ -195,7 +205,9 @@ class OpenAIGenerationAdapter(
             request: The request it answers.
 
         Returns:
-            The generated text with its token counts; an incomplete
+            The generated text with its token counts, the calls of the
+            built-in tools OpenAI ran (``server_tool_calls``) and the
+            sources its text cites (``citations``); an incomplete
             response keeps its text and gets ``incomplete_reason``, and
             a refusal gets ``IncompleteReason.REFUSAL`` and ``refusal``.
 
@@ -216,6 +228,8 @@ class OpenAIGenerationAdapter(
             refusal=stop.refusal,
             reasoning=reasoning_summary(raw),
             tool_calls=tool_calls(raw),
+            server_tool_calls=response_server_calls(raw),
+            citations=response_citations(raw),
             native=native_output(raw),
             raw=raw,
         )
@@ -248,7 +262,9 @@ class OpenAIGenerationAdapter(
             request: The request the stream answers.
 
         Yields:
-            One shared event per OpenAI event. The stream's end is
+            One shared event per OpenAI event; an item of a built-in
+            tool call is a ``ServerToolCallEvent`` when it is added and
+            when it is done. The stream's end is
             checked by ``StreamResponse`` and by the use case.
 
         Raises:
@@ -308,6 +324,10 @@ class OpenAIGenerationAdapter(
                 return ToolCallDoneEvent[ResponseStreamEvent](
                     call=done, raw=event
                 )
+            case (
+                ResponseOutputItemAddedEvent() | ResponseOutputItemDoneEvent()
+            ):
+                return _item_event(event)
             case ResponseTextDeltaEvent():
                 return TextDeltaEvent[ResponseStreamEvent](
                     text=event.delta, raw=event
@@ -330,6 +350,8 @@ class OpenAIGenerationAdapter(
                     refusal=stop.refusal,
                     reasoning=reasoning_summary(response),
                     tool_calls=tool_calls(response),
+                    server_tool_calls=response_server_calls(response),
+                    citations=response_citations(response),
                     native=native_output(response),
                     raw=event,
                 )
@@ -359,10 +381,13 @@ class OpenAIGenerationAdapter(
 
         Raises:
             RequestValidationError: The conversation does not end with a
-                ``user`` turn, or a part names another provider's file.
+                ``user`` turn, a part names another provider's file, or a
+                built-in tool is one OpenAI does not run (see
+                ``check_builtin_tools``).
         """
         check_conversation(request, self.provider)
         check_files(request, self.provider)
+        check_builtin_tools(request, self.provider, (WebSearch, CodeExecution))
         fields = {
             "model": request.model,
             "input": self.input_conversion(request.input),
@@ -386,11 +411,7 @@ class OpenAIGenerationAdapter(
                     }
                 }
             ),
-            "tools": (
-                MISSING
-                if request.tools is MISSING
-                else [_tool(tool) for tool in request.tools]
-            ),
+            "tools": _tools(request),
             "tool_choice": _tool_choice(request.tool_choice),
             "parallel_tool_calls": request.parallel_tool_calls,
         }
@@ -403,6 +424,92 @@ TOOL_CHOICES: Final[Mapping[ToolChoice, str]] = {
     ToolChoice.REQUIRED: "required",
 }
 """OpenAI's ``tool_choice`` of each shared mode."""
+
+
+def _item_event(
+    event: ResponseOutputItemAddedEvent | ResponseOutputItemDoneEvent,
+) -> GenerationEvent[ResponseStreamEvent]:
+    """Convert the event of an output item that is not a function call.
+
+    Args:
+        event: ``response.output_item.added`` or ``.done``, whose item is
+            no ``function_call``.
+
+    Returns:
+        The ``STARTED`` or ``DONE`` event of a built-in tool call for the
+        call items OpenAI runs itself, the call ``IN_PROGRESS`` when it
+        starts; ``OtherEvent`` for any other item (a message, reasoning).
+    """
+    item = event.item.model_dump(
+        mode="json", by_alias=True, exclude_unset=True
+    )
+    call = server_tool_call(item)
+    if call is None:
+        return OtherEvent[ResponseStreamEvent](raw=event)
+    if isinstance(event, ResponseOutputItemAddedEvent):
+        return ServerToolCallEvent[ResponseStreamEvent](
+            phase=ServerToolPhase.STARTED,
+            call=call.model_copy(
+                update={"status": ServerToolStatus.IN_PROGRESS, "error": None}
+            ),
+            raw=event,
+        )
+    return ServerToolCallEvent[ResponseStreamEvent](
+        phase=ServerToolPhase.DONE, call=call, raw=event
+    )
+
+
+def _tools(request: GenerationRequest) -> list[dict[str, Any]] | MISSING:
+    """Build ``tools`` from the function and the built-in tools.
+
+    Args:
+        request: The shared request.
+
+    Returns:
+        The function tools, then the built-in ones, or ``MISSING``
+        without any.
+    """
+    functions = [] if request.tools is MISSING else request.tools
+    tools = [_tool(tool) for tool in functions]
+    tools += [_builtin_tool(tool) for tool in request.builtin_tools]
+    return tools or MISSING
+
+
+def _builtin_tool(tool: BuiltinTool) -> dict[str, Any]:
+    """Build OpenAI's tool from a shared built-in tool.
+
+    Args:
+        tool: The shared tool; ``check_builtin_tools`` has accepted it.
+
+    Returns:
+        ``WebSearch`` as a ``web_search`` tool with its domains as
+        ``filters.allowed_domains`` and its location as an
+        ``approximate`` one, ``CodeExecution`` as a ``code_interpreter``
+        tool in an ``auto`` container, and a ``ProviderTool`` (the only
+        other kind) as its own definition.
+    """
+    match tool:
+        case WebSearch():
+            search: dict[str, Any] = {"type": "web_search"}
+            if tool.allowed_domains is not MISSING:
+                search["filters"] = {
+                    "allowed_domains": list(tool.allowed_domains)
+                }
+            location = tool.user_location
+            if location is not MISSING:
+                search["user_location"] = {
+                    "type": "approximate",
+                    **{
+                        name: getattr(location, name)
+                        for name in ("country", "region", "city", "timezone")
+                        if getattr(location, name) is not MISSING
+                    },
+                }
+            return search
+        case CodeExecution():
+            return {"type": "code_interpreter", "container": {"type": "auto"}}
+        case _:
+            return copy.deepcopy(dict(tool.definition))
 
 
 def _tool(tool: Tool) -> dict[str, Any]:
